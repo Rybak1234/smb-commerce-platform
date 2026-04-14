@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { hash } = require("bcryptjs");
 const prisma = new PrismaClient();
 
 const products = [
@@ -27,6 +28,21 @@ async function main() {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create admin user
+  const adminPass = await hash("admin123", 12);
+  const admin = await prisma.user.create({
+    data: { name: "Administrador", email: "admin@smbcommerce.com", password: adminPass, role: "admin" },
+  });
+  console.log("✅ Created admin user: admin@smbcommerce.com / admin123");
+
+  // Create demo customer
+  const customerPass = await hash("customer123", 12);
+  const customer = await prisma.user.create({
+    data: { name: "Cliente Demo", email: "demo@example.com", password: customerPass, role: "customer" },
+  });
+  console.log("✅ Created demo customer: demo@example.com / customer123");
 
   for (const product of products) {
     await prisma.product.create({ data: product });
@@ -45,6 +61,7 @@ async function main() {
         customerName: "Cliente Demo",
         status: "paid",
         total: p1.price + p2.price * 2,
+        userId: customer.id,
         items: {
           create: [
             { productId: p1.id, quantity: 1, price: p1.price },
