@@ -16,7 +16,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="animate-fade-in">
-      <Link href="/" className="text-sm text-emerald-600 hover:underline mb-6 inline-flex items-center gap-1">
+      <Link href="/" className="text-sm text-indigo-600 hover:underline mb-6 inline-flex items-center gap-1">
         ← Volver a la tienda
       </Link>
 
@@ -26,7 +26,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
           {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-[400px] object-cover" />
           ) : (
-            <div className="w-full h-[400px] bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center text-7xl">
+            <div className="w-full h-[400px] bg-gradient-to-br from-indigo-50 to-violet-50 flex items-center justify-center text-7xl">
               📦
             </div>
           )}
@@ -34,7 +34,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
         {/* Info */}
         <div className="flex flex-col justify-center">
-          <span className="text-sm bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full w-fit font-medium mb-3">
+          <span className="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full w-fit font-medium mb-3">
             {product.category}
           </span>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
@@ -43,8 +43,8 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
           )}
 
           <div className="flex items-baseline gap-3 mb-4">
-            <span className="text-4xl font-extrabold text-emerald-600">${product.price.toFixed(2)}</span>
-            <span className="text-sm text-gray-400">MXN</span>
+            <span className="text-4xl font-extrabold text-indigo-600">Bs. {product.price.toFixed(2)}</span>
+            <span className="text-sm text-gray-400">BOB</span>
           </div>
 
           <div className={`inline-flex items-center gap-2 text-sm mb-6 ${product.stock <= 5 ? "text-red-600" : "text-gray-500"}`}>
@@ -75,7 +75,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
                   <div className="w-full h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center text-2xl">📦</div>
                 )}
                 <h3 className="font-medium text-sm truncate">{p.name}</h3>
-                <p className="text-emerald-600 font-bold text-sm">${p.price.toFixed(2)}</p>
+                <p className="text-indigo-600 font-bold text-sm">Bs. {p.price.toFixed(2)}</p>
               </Link>
             ))}
           </div>

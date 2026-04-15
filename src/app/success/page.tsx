@@ -24,7 +24,7 @@ export default function SuccessPage() {
       <div className="flex gap-3 justify-center">
         <Link
           href="/"
-          className="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition font-medium"
+          className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium"
         >
           Seguir comprando
         </Link>

@@ -17,7 +17,7 @@ export default async function AdminOrdersPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Órdenes</h1>
         <p className="text-sm text-gray-500 mt-1">
-          {orders.length} orden{orders.length !== 1 ? "es" : ""} · Ingresos: ${revenue.toFixed(2)}
+          {orders.length} orden{orders.length !== 1 ? "es" : ""} · Ingresos: Bs. {revenue.toFixed(2)}
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default async function AdminOrdersPage() {
                 <td className="px-4 py-3">
                   <OrderStatusSelect orderId={o.id} currentStatus={o.status} />
                 </td>
-                <td className="px-4 py-3 text-right font-semibold">${o.total.toFixed(2)}</td>
+                <td className="px-4 py-3 text-right font-semibold">Bs. {o.total.toFixed(2)}</td>
                 <td className="px-4 py-3 text-xs text-gray-500 max-w-[200px] truncate">
                   {o.items.map((i) => `${i.product.name} ×${i.quantity}`).join(", ")}
                 </td>

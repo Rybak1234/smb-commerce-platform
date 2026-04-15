@@ -13,11 +13,11 @@ export default async function AdminProductsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Administrar Productos</h1>
-          <p className="text-sm text-gray-500 mt-1">{products.length} productos · Valor total: ${totalValue.toFixed(2)}{lowStock > 0 ? ` · ⚠️ ${lowStock} con stock bajo` : ""}</p>
+          <p className="text-sm text-gray-500 mt-1">{products.length} productos · Valor total: Bs. {totalValue.toFixed(2)}{lowStock > 0 ? ` · ⚠️ ${lowStock} con stock bajo` : ""}</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition text-sm font-medium shadow-sm"
+          className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition text-sm font-medium shadow-sm"
         >
           + Nuevo Producto
         </Link>
@@ -49,7 +49,7 @@ export default async function AdminProductsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-gray-500">{p.category}</td>
-                <td className="px-4 py-3 text-right font-medium">${p.price.toFixed(2)}</td>
+                <td className="px-4 py-3 text-right font-medium">Bs. {p.price.toFixed(2)}</td>
                 <td className="px-4 py-3 text-right">
                   <span className={p.stock <= 5 && p.active ? "text-red-600 font-semibold" : ""}>
                     {p.stock}
@@ -61,7 +61,7 @@ export default async function AdminProductsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <Link href={`/admin/products/${p.id}`} className="text-emerald-600 hover:text-emerald-700 font-medium text-xs">
+                  <Link href={`/admin/products/${p.id}`} className="text-indigo-600 hover:text-indigo-700 font-medium text-xs">
                     Editar →
                   </Link>
                 </td>
@@ -73,7 +73,7 @@ export default async function AdminProductsPage() {
                   <div className="text-3xl mb-2">📦</div>
                   No hay productos registrados
                   <br />
-                  <Link href="/admin/products/new" className="text-emerald-600 hover:underline text-sm mt-2 inline-block">Crear el primero</Link>
+                  <Link href="/admin/products/new" className="text-indigo-600 hover:underline text-sm mt-2 inline-block">Crear el primero</Link>
                 </td>
               </tr>
             )}

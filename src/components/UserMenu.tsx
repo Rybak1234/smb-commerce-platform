@@ -8,10 +8,10 @@ export default function UserMenu() {
   if (!session) {
     return (
       <div className="flex items-center gap-3">
-        <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors">
+        <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
           Iniciar Sesión
         </Link>
-        <Link href="/register" className="text-sm font-medium bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors">
+        <Link href="/register" className="text-sm font-medium bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
           Registrarse
         </Link>
       </div>
@@ -28,7 +28,7 @@ export default function UserMenu() {
           Admin
         </Link>
       )}
-      <Link href="/account" className="text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors">
+      <Link href="/account" className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors">
         {session.user?.name}
       </Link>
       <button

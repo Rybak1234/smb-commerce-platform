@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!product) throw new Error(`Product ${item.id} not found`);
     return {
       price_data: {
-        currency: "mxn",
+        currency: "bob",
         product_data: {
           name: product.name,
           ...(product.image ? { images: [product.image] } : {}),

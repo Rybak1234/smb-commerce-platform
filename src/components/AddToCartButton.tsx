@@ -36,7 +36,7 @@ export default function AddToCartButton({ product }: Props) {
       className={`mt-3 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
         added
           ? "bg-green-500 text-white scale-95"
-          : "bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-md active:scale-95"
+          : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md active:scale-95"
       }`}
     >
       {added ? "✓ Agregado" : "Agregar al carrito"}

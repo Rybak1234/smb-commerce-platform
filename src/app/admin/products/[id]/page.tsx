@@ -59,53 +59,53 @@ export default function EditProductPage() {
   if (!product) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
     <div className="max-w-xl mx-auto animate-fade-in">
-      <Link href="/admin/products" className="text-sm text-emerald-600 hover:underline mb-4 inline-block">
+      <Link href="/admin/products" className="text-sm text-indigo-600 hover:underline mb-4 inline-block">
         ← Volver a productos
       </Link>
       <h1 className="text-2xl font-bold mb-6">Editar Producto</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border p-6 space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
-          <input name="name" required defaultValue={product.name} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" />
+          <input name="name" required defaultValue={product.name} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-          <textarea name="description" rows={3} defaultValue={product.description || ""} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" />
+          <textarea name="description" rows={3} defaultValue={product.description || ""} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
-            <input name="price" type="number" step="0.01" min="0" required defaultValue={product.price} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" />
+            <input name="price" type="number" step="0.01" min="0" required defaultValue={product.price} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
-            <input name="stock" type="number" min="0" defaultValue={product.stock} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" />
+            <input name="stock" type="number" min="0" defaultValue={product.stock} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
           </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-          <input name="category" defaultValue={product.category} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" />
+          <input name="category" defaultValue={product.category} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">URL de Imagen</label>
-          <input name="image" type="url" defaultValue={product.image || ""} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none transition" placeholder="https://..." />
+          <input name="image" type="url" defaultValue={product.image || ""} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" placeholder="https://..." />
         </div>
         <label className="flex items-center gap-2">
-          <input name="active" type="checkbox" defaultChecked={product.active} className="rounded text-emerald-600 focus:ring-emerald-500" />
+          <input name="active" type="checkbox" defaultChecked={product.active} className="rounded text-indigo-600 focus:ring-indigo-500" />
           <span className="text-sm text-gray-700">Producto activo</span>
         </label>
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 bg-emerald-600 text-white py-2.5 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition font-medium"
+            className="flex-1 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition font-medium"
           >
             {saving ? "Guardando..." : "Guardar cambios"}
           </button>

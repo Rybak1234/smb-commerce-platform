@@ -46,9 +46,9 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-xl border p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 text-lg">💰</div>
+            <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-lg">💰</div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">${totalRevenue.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
+              <p className="text-2xl font-bold text-gray-900">Bs. {totalRevenue.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</p>
               <p className="text-xs text-gray-500">Ingresos Totales</p>
             </div>
           </div>
@@ -109,16 +109,16 @@ export default async function AdminDashboard() {
         <div className="lg:col-span-1 bg-white rounded-xl border p-5 shadow-sm">
           <h2 className="font-semibold text-gray-900 mb-4">Acciones Rápidas</h2>
           <div className="space-y-2">
-            <Link href="/admin/products" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 transition text-sm font-medium">
+            <Link href="/admin/products" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
               📋 Gestionar Productos
             </Link>
-            <Link href="/admin/products/new" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 transition text-sm font-medium">
+            <Link href="/admin/products/new" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
               ➕ Nuevo Producto
             </Link>
-            <Link href="/admin/orders" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 transition text-sm font-medium">
+            <Link href="/admin/orders" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
               📦 Gestionar Órdenes
             </Link>
-            <Link href="/admin/users" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 transition text-sm font-medium">
+            <Link href="/admin/users" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
               👥 Ver Usuarios
             </Link>
           </div>
@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
       <div className="bg-white rounded-xl border shadow-sm">
         <div className="p-5 border-b flex items-center justify-between">
           <h2 className="font-semibold text-gray-900">Órdenes Recientes</h2>
-          <Link href="/admin/orders" className="text-sm text-emerald-600 hover:underline">Ver todas →</Link>
+          <Link href="/admin/orders" className="text-sm text-indigo-600 hover:underline">Ver todas →</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -168,7 +168,7 @@ export default async function AdminDashboard() {
                     <p className="text-xs text-gray-400">{order.customerEmail}</p>
                   </td>
                   <td className="px-5 py-3 text-gray-600">{order.items.length} productos</td>
-                  <td className="px-5 py-3 text-right font-semibold">${order.total.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
+                  <td className="px-5 py-3 text-right font-semibold">Bs. {order.total.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</td>
                   <td className="px-5 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
                       order.status === "paid" ? "bg-green-100 text-green-700" :

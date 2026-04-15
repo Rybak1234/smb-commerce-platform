@@ -33,7 +33,7 @@ export default async function AdminUsersPage() {
               <tr key={user.id} className="hover:bg-gray-50">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${user.role === "admin" ? "bg-amber-500" : "bg-emerald-500"}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${user.role === "admin" ? "bg-amber-500" : "bg-indigo-500"}`}>
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="font-medium text-gray-900">{user.name}</span>

@@ -75,7 +75,7 @@ export default function CartPage() {
         <div className="text-6xl mb-4">🛒</div>
         <p className="text-gray-400 text-lg mb-2">Tu carrito está vacío</p>
         <p className="text-gray-300 text-sm mb-6">Agrega productos desde nuestra tienda</p>
-        <Link href="/" className="inline-block bg-emerald-600 text-white px-6 py-2.5 rounded-lg hover:bg-emerald-700 transition font-medium text-sm">
+        <Link href="/" className="inline-block bg-indigo-600 text-white px-6 py-2.5 rounded-lg hover:bg-indigo-700 transition font-medium text-sm">
           Explorar tienda
         </Link>
       </div>
@@ -106,7 +106,7 @@ export default function CartPage() {
               )}
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold truncate">{item.name}</h3>
-                <p className="text-emerald-600 font-medium text-sm">${item.price.toFixed(2)} c/u</p>
+                <p className="text-indigo-600 font-medium text-sm">Bs. {item.price.toFixed(2)} c/u</p>
               </div>
               <div className="flex items-center gap-1.5">
                 <button
@@ -124,7 +124,7 @@ export default function CartPage() {
                 </button>
               </div>
               <p className="font-bold w-24 text-right text-lg">
-                ${(item.price * item.quantity).toFixed(2)}
+                Bs. {(item.price * item.quantity).toFixed(2)}
               </p>
               <button onClick={() => remove(item.id)} className="text-gray-400 hover:text-red-500 transition p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -142,22 +142,22 @@ export default function CartPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal ({totalItems} artículos)</span>
-                <span>${total.toFixed(2)}</span>
+                <span>Bs. {total.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Envío</span>
-                <span className="text-emerald-600 font-medium">Gratis</span>
+                <span className="text-indigo-600 font-medium">Gratis</span>
               </div>
               <hr className="my-3" />
               <div className="flex justify-between text-xl font-bold">
                 <span>Total</span>
-                <span className="text-emerald-600">${total.toFixed(2)}</span>
+                <span className="text-indigo-600">Bs. {total.toFixed(2)}</span>
               </div>
             </div>
             <button
               onClick={checkout}
               disabled={loading}
-              className="mt-6 w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition font-semibold flex items-center justify-center gap-2"
+              className="mt-6 w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition font-semibold flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -168,7 +168,7 @@ export default function CartPage() {
                 "Pagar con Stripe"
               )}
             </button>
-            <Link href="/" className="block text-center text-sm text-emerald-600 hover:underline mt-3">
+            <Link href="/" className="block text-center text-sm text-indigo-600 hover:underline mt-3">
               Seguir comprando
             </Link>
           </div>

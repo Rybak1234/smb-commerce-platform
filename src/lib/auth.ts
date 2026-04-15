@@ -47,5 +47,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || "smb-commerce-secret-key-2024",
+  secret: process.env.NEXTAUTH_SECRET || "novatech-secret-key-2024",
 };

@@ -7,7 +7,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-56 shrink-0 bg-gray-900 min-h-screen px-4 py-6 text-white">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-wider text-gray-400 font-bold">Admin Panel</p>
-          <p className="text-lg font-bold text-emerald-400 mt-1">SMBCommerce</p>
+          <p className="text-lg font-bold text-indigo-400 mt-1">NovaTech</p>
         </div>
         <nav className="space-y-1">
           <Link href="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors">

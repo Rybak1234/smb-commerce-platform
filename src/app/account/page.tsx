@@ -34,7 +34,7 @@ export default async function AccountPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white rounded-xl border p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xl font-bold">
+            <div className="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xl font-bold">
               {user.name.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -48,7 +48,7 @@ export default async function AccountPage() {
           <p className="text-xs text-gray-500">Pedidos Realizados</p>
         </div>
         <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">${totalSpent.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</p>
+          <p className="text-2xl font-bold text-gray-900">Bs. {totalSpent.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</p>
           <p className="text-xs text-gray-500">Total Gastado</p>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default async function AccountPage() {
                     }`}>
                       {order.status === "paid" ? "Pagada" : order.status === "shipped" ? "Enviada" : order.status === "cancelled" ? "Cancelada" : "Pendiente"}
                     </span>
-                    <span className="font-semibold">${order.total.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-semibold">Bs. {order.total.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -93,7 +93,7 @@ export default async function AccountPage() {
                       )}
                       <span className="flex-1">{item.product.name}</span>
                       <span className="text-gray-400">x{item.quantity}</span>
-                      <span className="font-medium">${(item.price * item.quantity).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
+                      <span className="font-medium">Bs. {(item.price * item.quantity).toLocaleString("es-BO", { minimumFractionDigits: 2 })}</span>
                     </div>
                   ))}
                 </div>
