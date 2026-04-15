@@ -17,8 +17,11 @@ export default function NewProductPage() {
       name: fd.get("name"),
       description: fd.get("description"),
       price: parseFloat(fd.get("price") as string),
+      originalPrice: fd.get("originalPrice") ? parseFloat(fd.get("originalPrice") as string) : null,
       image: fd.get("image") || null,
       category: fd.get("category") || "General",
+      badge: fd.get("badge") || null,
+      featured: fd.get("featured") === "on",
       stock: parseInt(fd.get("stock") as string) || 0,
       active: fd.get("active") === "on",
     };
@@ -51,8 +54,25 @@ export default function NewProductPage() {
             <input name="price" type="number" step="0.01" min="0" required className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Precio Original</label>
+            <input name="originalPrice" type="number" step="0.01" min="0" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" placeholder="Para mostrar descuento" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
             <input name="stock" type="number" min="0" defaultValue="0" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Badge</label>
+            <select name="badge" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 outline-none transition">
+              <option value="">Sin badge</option>
+              <option value="Nuevo">Nuevo</option>
+              <option value="Oferta">Oferta</option>
+              <option value="Más vendido">Más vendido</option>
+              <option value="Popular">Popular</option>
+              <option value="Premium">Premium</option>
+            </select>
           </div>
         </div>
         <div>
@@ -72,10 +92,16 @@ export default function NewProductPage() {
             <img src={imagePreview} alt="Preview" className="mt-2 w-full h-40 object-cover rounded-lg border" onError={() => setImagePreview("")} />
           )}
         </div>
-        <label className="flex items-center gap-2">
-          <input name="active" type="checkbox" defaultChecked className="rounded text-indigo-600 focus:ring-indigo-500" />
-          <span className="text-sm text-gray-700">Producto activo</span>
-        </label>
+        <div className="flex gap-6">
+          <label className="flex items-center gap-2">
+            <input name="active" type="checkbox" defaultChecked className="rounded text-indigo-600 focus:ring-indigo-500" />
+            <span className="text-sm text-gray-700">Producto activo</span>
+          </label>
+          <label className="flex items-center gap-2">
+            <input name="featured" type="checkbox" className="rounded text-indigo-600 focus:ring-indigo-500" />
+            <span className="text-sm text-gray-700">Producto destacado</span>
+          </label>
+        </div>
         <button
           type="submit"
           disabled={saving}
