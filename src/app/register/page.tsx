@@ -1,128 +1,91 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserPlus, Mail, Lock, User, AlertCircle } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-
-    if (password !== confirm) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
     setLoading(true);
-
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || "Error al registrar");
-      setLoading(false);
-      return;
-    }
-
-    // Auto-login after registration
-    await signIn("credentials", { email, password, redirect: false });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Error al registrarse"); setLoading(false); return; }
+      const signInRes = await signIn("credentials", { email, password, redirect: false });
+      if (signInRes?.error) { setError("Cuenta creada, pero hubo un error al iniciar sesión"); } else { router.push("/"); router.refresh(); }
+    } catch { setError("Error de conexión"); }
     setLoading(false);
-    router.push("/");
-    router.refresh();
   }
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg border p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Crear Cuenta</h1>
-            <p className="text-gray-500 mt-1">Regístrate en NovaTech</p>
+    <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-2">
+            <span className="text-primary-foreground font-bold text-xl">N</span>
           </div>
-
+          <CardTitle className="text-2xl">Crear Cuenta</CardTitle>
+          <CardDescription>Únete al marketplace NovaTech</CardDescription>
+        </CardHeader>
+        <CardContent>
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
+            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" /> {error}
             </div>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="Tu nombre"
-              />
+            <div className="space-y-2">
+              <Label htmlFor="name">Nombre</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Tu nombre" className="pl-9" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="tu@email.com"
-              />
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" className="pl-9" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="Mínimo 6 caracteres"
-              />
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Mínimo 6 caracteres" className="pl-9" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
-              <input
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="Repite la contraseña"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 transition"
-            >
-              {loading ? "Registrando..." : "Crear Cuenta"}
-            </button>
+            <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>
+              <UserPlus className="h-4 w-4" /> {loading ? "Creando cuenta..." : "Registrarse"}
+            </Button>
           </form>
-
-          <p className="text-center text-sm text-gray-500 mt-6">
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-sm text-muted-foreground">
             ¿Ya tienes cuenta?{" "}
-            <Link href="/login" className="text-indigo-600 font-medium hover:underline">
-              Inicia sesión
-            </Link>
+            <Link href="/login" className="text-primary font-medium hover:underline">Inicia sesión</Link>
           </p>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
+

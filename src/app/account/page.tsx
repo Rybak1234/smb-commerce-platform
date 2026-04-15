@@ -1,107 +1,132 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+"use client";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { User, Package, Heart, MapPin, Bell, Star, Settings, Gift, TrendingUp, ArrowRight, ShoppingBag, CreditCard, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { formatPrice, formatDate, getInitials } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export default function AccountPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [stats, setStats] = useState({ totalOrders: 0, totalSpent: 0, loyaltyPoints: 0, wishlistCount: 0 });
 
-export default async function AccountPage() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
+  useEffect(() => { if (status === "unauthenticated") router.push("/login"); }, [status, router]);
 
-  const userId = (session.user as any).id;
+  useEffect(() => {
+    if (!session) return;
+    fetch("/api/orders?limit=5").then((r) => r.json()).then((d) => {
+      const list = d.orders || d || [];
+      setOrders(Array.isArray(list) ? list.slice(0, 5) : []);
+      const total = Array.isArray(list) ? list.reduce((s: number, o: any) => s + (o.total || 0), 0) : 0;
+      setStats((p) => ({ ...p, totalOrders: Array.isArray(list) ? list.length : 0, totalSpent: total }));
+    }).catch(() => {});
+    fetch("/api/wishlist").then((r) => r.json()).then((d) => setStats((p) => ({ ...p, wishlistCount: Array.isArray(d) ? d.length : 0 }))).catch(() => {});
+  }, [session]);
 
-  const [user, orders] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId } }),
-    prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      include: { items: { include: { product: true } } },
-    }),
-  ]);
+  if (status === "loading") return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  if (!session) return null;
 
-  if (!user) return null;
-
-  const totalSpent = orders.reduce((sum, o) => sum + o.total, 0);
+  const user = session.user as any;
+  const statusMap: Record<string, string> = { pending: "Pendiente", confirmed: "Confirmado", processing: "En Proceso", shipped: "Enviado", delivered: "Entregado", cancelled: "Cancelado" };
+  const statusColor: Record<string, string> = { pending: "warning", confirmed: "info", processing: "info", shipped: "default", delivered: "success", cancelled: "destructive" } as any;
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Mi Cuenta</h1>
-        <p className="text-gray-500 mt-1">Gestiona tu perfil y revisa tus pedidos</p>
-      </div>
-
-      {/* Profile Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xl font-bold">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <p className="font-semibold text-gray-900">{user.name}</p>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
-          <p className="text-xs text-gray-500">Pedidos Realizados</p>
-        </div>
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">Bs. {totalSpent.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</p>
-          <p className="text-xs text-gray-500">Total Gastado</p>
+    <div className="container mx-auto px-4 py-8">
+      {/* Profile Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+        <Avatar className="h-16 w-16">
+          <AvatarFallback className="text-xl bg-primary text-primary-foreground">{getInitials(user.name || user.email)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold">{user.name || "Usuario"}</h1>
+          <p className="text-muted-foreground">{user.email}</p>
+          {user.role && <Badge variant="outline" className="mt-1 capitalize">{user.role}</Badge>}
         </div>
       </div>
 
-      {/* Orders */}
-      <div className="bg-white rounded-xl border shadow-sm">
-        <div className="p-5 border-b">
-          <h2 className="font-semibold text-gray-900">Historial de Pedidos</h2>
-        </div>
-        {orders.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">
-            <p className="text-4xl mb-3">🛒</p>
-            <p>Aún no has realizado ningún pedido</p>
-          </div>
-        ) : (
-          <div className="divide-y">
-            {orders.map((order) => (
-              <div key={order.id} className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <span className="font-mono text-xs text-gray-400">#{order.id.slice(-8)}</span>
-                    <span className="mx-2 text-gray-300">·</span>
-                    <span className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" })}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      order.status === "paid" ? "bg-green-100 text-green-700" :
-                      order.status === "shipped" ? "bg-blue-100 text-blue-700" :
-                      order.status === "cancelled" ? "bg-red-100 text-red-700" :
-                      "bg-yellow-100 text-yellow-700"
-                    }`}>
-                      {order.status === "paid" ? "Pagada" : order.status === "shipped" ? "Enviada" : order.status === "cancelled" ? "Cancelada" : "Pendiente"}
-                    </span>
-                    <span className="font-semibold">Bs. {order.total.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</span>
-                  </div>
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        {[
+          { icon: Package, label: "Pedidos", value: stats.totalOrders },
+          { icon: CreditCard, label: "Total Gastado", value: formatPrice(stats.totalSpent) },
+          { icon: Star, label: "Puntos de Lealtad", value: stats.loyaltyPoints },
+          { icon: Heart, label: "Favoritos", value: stats.wishlistCount },
+        ].map(({ icon: Icon, label, value }) => (
+          <Card key={label}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Icon className="h-5 w-5 text-primary" /></div>
+              <div><p className="text-2xl font-bold">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Quick Links */}
+        <Card>
+          <CardHeader><CardTitle className="text-lg">Mi Cuenta</CardTitle></CardHeader>
+          <CardContent className="space-y-1">
+            {[
+              { icon: Package, label: "Mis Pedidos", href: "/account/orders" },
+              { icon: Heart, label: "Lista de Deseos", href: "/wishlist" },
+              { icon: MapPin, label: "Direcciones", href: "/account/addresses" },
+              { icon: Bell, label: "Notificaciones", href: "/account/notifications" },
+              { icon: Settings, label: "Configuración", href: "/account/settings" },
+              ...(user.role === "vendor" ? [{ icon: TrendingUp, label: "Panel de Vendedor", href: "/vendor/dashboard" }] : []),
+              ...(user.role === "admin" ? [{ icon: Settings, label: "Panel de Admin", href: "/admin" }] : []),
+            ].map(({ icon: Icon, label, href }) => (
+              <Link key={href} href={href} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors group">
+                <div className="flex items-center gap-3"><Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" /><span className="text-sm font-medium">{label}</span></div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Recent Orders */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">Pedidos Recientes</CardTitle>
+              <Link href="/account/orders"><Button variant="ghost" size="sm" className="gap-1">Ver todos <ArrowRight className="h-3 w-3" /></Button></Link>
+            </CardHeader>
+            <CardContent>
+              {orders.length === 0 ? (
+                <div className="text-center py-8">
+                  <ShoppingBag className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Sin pedidos todavía</p>
                 </div>
-                <div className="space-y-2">
-                  {order.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 text-sm text-gray-600">
-                      {item.product.image && (
-                        <img src={item.product.image} alt="" className="w-10 h-10 rounded object-cover" />
-                      )}
-                      <span className="flex-1">{item.product.name}</span>
-                      <span className="text-gray-400">x{item.quantity}</span>
-                      <span className="font-medium">Bs. {(item.price * item.quantity).toLocaleString("es-BO", { minimumFractionDigits: 2 })}</span>
-                    </div>
+              ) : (
+                <div className="space-y-3">
+                  {orders.map((order) => (
+                    <Link key={order.id} href={`/account/orders/${order.id}`} className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center"><Package className="h-5 w-5 text-muted-foreground" /></div>
+                        <div>
+                          <p className="text-sm font-medium">#{order.orderNumber?.slice(0, 8) || order.id.slice(0, 8)}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={(statusColor[order.status] || "default") as any}>{statusMap[order.status] || order.status}</Badge>
+                        <p className="text-sm font-semibold mt-1">{formatPrice(order.total)}</p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
 }
+

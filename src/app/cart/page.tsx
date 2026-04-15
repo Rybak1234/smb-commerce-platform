@@ -1,204 +1,134 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import toast from "react-hot-toast";
-import CouponInput from "@/components/CouponInput";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatPrice } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  image?: string;
-}
-
-function getCart(): CartItem[] {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem("cart");
-  return raw ? JSON.parse(raw) : [];
-}
-
-function saveCart(items: CartItem[]) {
-  localStorage.setItem("cart", JSON.stringify(items));
-  window.dispatchEvent(new Event("cart-updated"));
+  image: string;
+  stock: number;
 }
 
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [couponDiscount, setCouponDiscount] = useState(0);
-  const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [discount, setDiscount] = useState(0);
 
-  useEffect(() => setItems(getCart()), []);
+  useEffect(() => {
+    const saved = localStorage.getItem("cart");
+    if (saved) setItems(JSON.parse(saved));
+  }, []);
 
-  const updateQty = (id: string, delta: number) => {
-    const updated = items
-      .map((i) => (i.id === id ? { ...i, quantity: i.quantity + delta } : i))
-      .filter((i) => i.quantity > 0);
-    setItems(updated);
-    saveCart(updated);
+  const save = (newItems: CartItem[]) => {
+    setItems(newItems);
+    localStorage.setItem("cart", JSON.stringify(newItems));
+    window.dispatchEvent(new Event("storage"));
+  };
+
+  const updateQty = (id: string, qty: number) => {
+    if (qty <= 0) return remove(id);
+    save(items.map((i) => (i.id === id ? { ...i, quantity: qty } : i)));
   };
 
   const remove = (id: string) => {
-    const item = items.find((i) => i.id === id);
-    const updated = items.filter((i) => i.id !== id);
-    setItems(updated);
-    saveCart(updated);
-    if (item) toast.success(`${item.name} eliminado`);
+    save(items.filter((i) => i.id !== id));
+    toast.success("Producto eliminado del carrito");
   };
 
-  const clearCart = () => {
-    setItems([]);
-    saveCart([]);
-    setCouponDiscount(0);
-    setCouponCode("");
-    toast.success("Carrito vaciado");
+  const applyCoupon = async () => {
+    if (!coupon.trim()) return;
+    try {
+      const res = await fetch("/api/coupons/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: coupon, total: subtotal }) });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error || "Cupón inválido"); return; }
+      setDiscount(data.discount);
+      toast.success(`Cupón aplicado: -${formatPrice(data.discount)}`);
+    } catch { toast.error("Error al validar cupón"); }
   };
 
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const discountAmount = subtotal * (couponDiscount / 100);
-  const total = subtotal - discountAmount;
-  const totalItems = items.reduce((s, i) => s + i.quantity, 0);
-
-  const handleCouponApply = (discount: number, code: string) => {
-    setCouponDiscount(discount);
-    setCouponCode(code);
-  };
-
-  const checkout = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, couponCode, couponDiscount }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch {
-      toast.error("Error al procesar el pago");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (items.length === 0) {
-    return (
-      <div className="text-center py-20 animate-fade-in">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-          </svg>
-        </div>
-        <p className="text-gray-500 text-lg font-medium mb-2">Tu carrito esta vacio</p>
-        <p className="text-gray-400 text-sm mb-6">Agrega productos desde nuestra tienda</p>
-        <Link href="/" className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition font-medium text-sm">
-          Explorar tienda
-        </Link>
-      </div>
-    );
-  }
+  const shipping = subtotal >= 200 ? 0 : 25;
+  const total = subtotal - discount + shipping;
+  const itemCount = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div className="animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Carrito de Compras</h1>
-          <p className="text-sm text-gray-500 mt-1">{totalItems} articulo{totalItems !== 1 ? "s" : ""}</p>
-        </div>
-        <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-700 transition font-medium">
-          Vaciar carrito
-        </button>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Carrito de Compras</h1>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-3">
-          {items.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl border p-4 flex items-center gap-4 hover:shadow-sm transition">
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover" />
-              ) : (
-                <div className="w-20 h-20 rounded-xl bg-gray-50 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold truncate">{item.name}</h3>
-                <p className="text-indigo-600 font-medium text-sm">Bs. {item.price.toFixed(2)} c/u</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button onClick={() => updateQty(item.id, -1)} className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition text-sm font-bold">-</button>
-                <span className="w-10 text-center font-medium">{item.quantity}</span>
-                <button onClick={() => updateQty(item.id, 1)} className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition text-sm font-bold">+</button>
-              </div>
-              <p className="font-bold w-24 text-right text-lg">Bs. {(item.price * item.quantity).toFixed(2)}</p>
-              <button onClick={() => remove(item.id)} className="text-gray-400 hover:text-red-500 transition p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
-          ))}
+      {items.length === 0 ? (
+        <div className="text-center py-24">
+          <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <ShoppingBag className="h-10 w-10 text-muted-foreground/30" />
+          </div>
+          <p className="text-lg font-medium">Tu carrito está vacío</p>
+          <p className="text-sm text-muted-foreground mt-1">Agrega productos para comenzar</p>
+          <Link href="/"><Button className="mt-4 gap-2"><ShoppingBag className="h-4 w-4" /> Ir a la Tienda</Button></Link>
         </div>
-
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl border p-6 sticky top-20 shadow-sm">
-            <h2 className="font-bold text-lg mb-4">Resumen del pedido</h2>
-            <div className="mb-4">
-              <CouponInput subtotal={subtotal} onApply={handleCouponApply} />
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-gray-600">
-                <span>Subtotal ({totalItems} articulos)</span>
-                <span>Bs. {subtotal.toFixed(2)}</span>
-              </div>
-              {couponDiscount > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Descuento ({couponDiscount}%)</span>
-                  <span>-Bs. {discountAmount.toFixed(2)}</span>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            {items.map((item) => (
+              <div key={item.id} className="flex gap-4 p-4 rounded-xl border bg-card">
+                <div className="relative h-24 w-24 shrink-0 rounded-lg overflow-hidden bg-muted">
+                  <Image src={item.image || "/placeholder.png"} alt={item.name} fill className="object-cover" />
                 </div>
-              )}
-              <div className="flex justify-between text-gray-600">
-                <span>Envio</span>
-                <span className="text-indigo-600 font-medium">{subtotal >= 200 ? "Gratis" : "Bs. 20.00"}</span>
+                <div className="flex-1 min-w-0">
+                  <Link href={`/products/${item.id}`} className="font-semibold hover:text-primary transition-colors line-clamp-1">{item.name}</Link>
+                  <p className="text-primary font-bold mt-1">{formatPrice(item.price)}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-1">
+                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQty(item.id, item.quantity - 1)}><Minus className="h-3 w-3" /></Button>
+                      <span className="w-10 text-center font-medium">{item.quantity}</span>
+                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQty(item.id, item.quantity + 1)}><Plus className="h-3 w-3" /></Button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold">{formatPrice(item.price * item.quantity)}</span>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => remove(item.id)}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              {subtotal < 200 && (
-                <p className="text-xs text-gray-400 bg-indigo-50 p-2 rounded-lg">
-                  Agrega Bs. {(200 - subtotal).toFixed(2)} mas para envio gratis
-                </p>
-              )}
-              <hr className="my-3" />
-              <div className="flex justify-between text-xl font-bold">
-                <span>Total</span>
-                <span className="text-indigo-600">Bs. {(total + (subtotal < 200 ? 20 : 0)).toFixed(2)}</span>
-              </div>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            <Card>
+              <CardHeader><CardTitle className="text-lg">Resumen</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Input placeholder="Código de cupón" value={coupon} onChange={(e) => setCoupon(e.target.value)} />
+                  <Button variant="outline" onClick={applyCoupon}><Tag className="h-4 w-4" /></Button>
+                </div>
+                <Separator />
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">Subtotal ({itemCount} items)</span><span>{formatPrice(subtotal)}</span></div>
+                  {discount > 0 && <div className="flex justify-between text-green-600"><span>Descuento</span><span>-{formatPrice(discount)}</span></div>}
+                  <div className="flex justify-between"><span className="text-muted-foreground">Envío</span><span className={shipping === 0 ? "text-green-600" : ""}>{shipping === 0 ? "Gratis" : formatPrice(shipping)}</span></div>
+                  <Separator />
+                  <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
+                </div>
+                <Link href="/checkout"><Button className="w-full gap-2" size="lg">Pagar<ArrowRight className="h-4 w-4" /></Button></Link>
+              </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 p-2 rounded-lg border"><Truck className="h-3.5 w-3.5 text-primary" />Envío gratis en pedidos +Bs. 200</div>
+              <div className="flex items-center gap-2 p-2 rounded-lg border"><ShieldCheck className="h-3.5 w-3.5 text-primary" />Pago seguro con Stripe</div>
             </div>
-            <button onClick={checkout} disabled={loading} className="mt-6 w-full bg-indigo-600 text-white py-3.5 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-200">
-              {loading ? (
-                <>
-                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                  Procesando...
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  Pagar con Stripe
-                </>
-              )}
-            </button>
-            <Link href="/" className="block text-center text-sm text-indigo-600 hover:underline mt-3 font-medium">
-              Seguir comprando
-            </Link>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
+

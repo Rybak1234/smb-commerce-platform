@@ -1,194 +1,106 @@
 import { prisma } from "@/lib/prisma";
+import { formatPrice } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign, ShoppingBag, Package, Users, TrendingUp, AlertTriangle, Store, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [products, orders, users, recentOrders] = await Promise.all([
-    prisma.product.aggregate({ _count: true, _sum: { stock: true } }),
-    prisma.order.aggregate({ _count: true, _sum: { total: true } }),
+  const [orderCount, productCount, userCount, vendorCount, recentOrders, lowStock, totalRevenue, pendingOrders] = await Promise.all([
+    prisma.order.count(),
+    prisma.product.count({ where: { active: true } }),
     prisma.user.count(),
-    prisma.order.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" },
-      include: { items: { include: { product: true } } },
-    }),
-  ]);
-
-  const [pending, paid, shipped, cancelled] = await Promise.all([
+    prisma.vendor.count({ where: { status: "approved" } }),
+    prisma.order.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { items: true } }),
+    prisma.product.findMany({ where: { active: true, stock: { lte: 5 } }, orderBy: { stock: "asc" }, take: 5 }),
+    prisma.order.aggregate({ _sum: { total: true }, where: { paymentStatus: "paid" } }),
     prisma.order.count({ where: { status: "pending" } }),
-    prisma.order.count({ where: { status: "paid" } }),
-    prisma.order.count({ where: { status: "shipped" } }),
-    prisma.order.count({ where: { status: "cancelled" } }),
   ]);
 
-  const lowStock = await prisma.product.findMany({
-    where: { stock: { lte: 5 }, active: true },
-    orderBy: { stock: "asc" },
-    take: 5,
-  });
-
-  const totalRevenue = orders._sum.total || 0;
-  const totalOrders = orders._count;
-  const totalProducts = products._count;
-  const totalStock = products._sum.stock || 0;
+  const revenue = totalRevenue._sum.total || 0;
+  const statusMap: Record<string, string> = { pending: "Pendiente", confirmed: "Confirmado", processing: "En Proceso", shipped: "Enviado", delivered: "Entregado", cancelled: "Cancelado" };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
-          <p className="text-gray-500 mt-1">Resumen general de la tienda</p>
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">Resumen general de tu marketplace</p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-lg">💰</div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">Bs. {totalRevenue.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</p>
-              <p className="text-xs text-gray-500">Ingresos Totales</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 text-lg">📦</div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
-              <p className="text-xs text-gray-500">Órdenes Totales</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 text-lg">🛍️</div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
-              <p className="text-xs text-gray-500">Productos ({totalStock} en stock)</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 text-lg">👥</div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">{users}</p>
-              <p className="text-xs text-gray-500">Usuarios Registrados</p>
-            </div>
-          </div>
-        </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { icon: DollarSign, label: "Ingresos Totales", value: formatPrice(revenue), color: "text-green-500", bg: "bg-green-500/10" },
+          { icon: ShoppingBag, label: "Total Pedidos", value: orderCount, color: "text-blue-500", bg: "bg-blue-500/10", extra: `${pendingOrders} pendientes` },
+          { icon: Package, label: "Productos Activos", value: productCount, color: "text-purple-500", bg: "bg-purple-500/10" },
+          { icon: Users, label: "Usuarios", value: userCount, color: "text-orange-500", bg: "bg-orange-500/10", extra: `${vendorCount} vendedores` },
+        ].map(({ icon: Icon, label, value, color, bg, extra }) => (
+          <Card key={label}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-muted-foreground">{label}</span>
+                <div className={`h-10 w-10 rounded-lg ${bg} flex items-center justify-center`}><Icon className={`h-5 w-5 ${color}`} /></div>
+              </div>
+              <p className="text-3xl font-bold">{value}</p>
+              {extra && <p className="text-xs text-muted-foreground mt-1">{extra}</p>}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Order Status + Quick Links */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-1 bg-white rounded-xl border p-5 shadow-sm">
-          <h2 className="font-semibold text-gray-900 mb-4">Estado de Órdenes</h2>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm"><span className="w-2 h-2 rounded-full bg-yellow-400" /> Pendientes</span>
-              <span className="font-semibold text-yellow-600">{pending}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm"><span className="w-2 h-2 rounded-full bg-green-400" /> Pagadas</span>
-              <span className="font-semibold text-green-600">{paid}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm"><span className="w-2 h-2 rounded-full bg-blue-400" /> Enviadas</span>
-              <span className="font-semibold text-blue-600">{shipped}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm"><span className="w-2 h-2 rounded-full bg-red-400" /> Canceladas</span>
-              <span className="font-semibold text-red-600">{cancelled}</span>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg">Pedidos Recientes</CardTitle>
+            <Link href="/admin/orders" className="text-xs text-primary hover:underline flex items-center gap-1">Ver todos <ArrowUpRight className="h-3 w-3" /></Link>
+          </CardHeader>
+          <CardContent>
+            {recentOrders.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Sin pedidos</p> : (
+              <div className="space-y-3">
+                {recentOrders.map((o) => (
+                  <div key={o.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <p className="text-sm font-medium">#{o.orderNumber?.slice(0, 8) || o.id.slice(0, 8)}</p>
+                      <p className="text-xs text-muted-foreground">{o.customerName || o.customerEmail}</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant="outline" className="text-xs">{statusMap[o.status] || o.status}</Badge>
+                      <p className="text-sm font-semibold mt-1">{formatPrice(o.total)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-        <div className="lg:col-span-1 bg-white rounded-xl border p-5 shadow-sm">
-          <h2 className="font-semibold text-gray-900 mb-4">Acciones Rápidas</h2>
-          <div className="space-y-2">
-            <Link href="/admin/products" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
-              📋 Gestionar Productos
-            </Link>
-            <Link href="/admin/products/new" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
-              ➕ Nuevo Producto
-            </Link>
-            <Link href="/admin/orders" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
-              📦 Gestionar Órdenes
-            </Link>
-            <Link href="/admin/users" className="block w-full text-left px-4 py-2.5 rounded-lg bg-gray-50 hover:bg-indigo-50 hover:text-indigo-700 transition text-sm font-medium">
-              👥 Ver Usuarios
-            </Link>
-          </div>
-        </div>
-
-        <div className="lg:col-span-1 bg-white rounded-xl border p-5 shadow-sm">
-          <h2 className="font-semibold text-gray-900 mb-4">⚠️ Stock Bajo</h2>
-          {lowStock.length === 0 ? (
-            <p className="text-sm text-gray-400">Todos los productos tienen stock suficiente</p>
-          ) : (
-            <div className="space-y-2">
-              {lowStock.map((p) => (
-                <Link key={p.id} href={`/admin/products/${p.id}`} className="flex items-center justify-between px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 transition">
-                  <span className="text-sm font-medium text-gray-700 truncate">{p.name}</span>
-                  <span className="text-xs font-bold text-red-600 ml-2">{p.stock} uds</span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Recent Orders */}
-      <div className="bg-white rounded-xl border shadow-sm">
-        <div className="p-5 border-b flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Órdenes Recientes</h2>
-          <Link href="/admin/orders" className="text-sm text-indigo-600 hover:underline">Ver todas →</Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-              <tr>
-                <th className="px-5 py-3 text-left">ID</th>
-                <th className="px-5 py-3 text-left">Cliente</th>
-                <th className="px-5 py-3 text-left">Items</th>
-                <th className="px-5 py-3 text-right">Total</th>
-                <th className="px-5 py-3 text-center">Estado</th>
-                <th className="px-5 py-3 text-right">Fecha</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {recentOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3 font-mono text-xs text-gray-500">{order.id.slice(-8)}</td>
-                  <td className="px-5 py-3">
-                    <p className="font-medium text-gray-900">{order.customerName}</p>
-                    <p className="text-xs text-gray-400">{order.customerEmail}</p>
-                  </td>
-                  <td className="px-5 py-3 text-gray-600">{order.items.length} productos</td>
-                  <td className="px-5 py-3 text-right font-semibold">Bs. {order.total.toLocaleString("es-BO", { minimumFractionDigits: 2 })}</td>
-                  <td className="px-5 py-3 text-center">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      order.status === "paid" ? "bg-green-100 text-green-700" :
-                      order.status === "shipped" ? "bg-blue-100 text-blue-700" :
-                      order.status === "cancelled" ? "bg-red-100 text-red-700" :
-                      "bg-yellow-100 text-yellow-700"
-                    }`}>
-                      {order.status === "paid" ? "Pagada" : order.status === "shipped" ? "Enviada" : order.status === "cancelled" ? "Cancelada" : "Pendiente"}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-right text-gray-500">{new Date(order.createdAt).toLocaleDateString("es-MX")}</td>
-                </tr>
-              ))}
-              {recentOrders.length === 0 && (
-                <tr><td colSpan={6} className="px-5 py-8 text-center text-gray-400">No hay órdenes aún</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {/* Low Stock */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-orange-500" />Stock Bajo</CardTitle>
+            <Link href="/admin/products" className="text-xs text-primary hover:underline flex items-center gap-1">Ver todos <ArrowUpRight className="h-3 w-3" /></Link>
+          </CardHeader>
+          <CardContent>
+            {lowStock.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Sin alertas de stock</p> : (
+              <div className="space-y-3">
+                {lowStock.map((p) => (
+                  <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1">{p.name}</p>
+                      <p className="text-xs text-muted-foreground">{formatPrice(p.price)}</p>
+                    </div>
+                    <Badge variant={p.stock === 0 ? "destructive" : "warning"}>{p.stock === 0 ? "Agotado" : `${p.stock} uds`}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
+

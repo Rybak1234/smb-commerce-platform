@@ -1,8 +1,13 @@
-"use client";
+﻿"use client";
 import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { LogIn, Mail, Lock, AlertCircle } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -11,22 +16,14 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const unauthorized = searchParams.get("error") === "unauthorized";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
+    const res = await signIn("credentials", { email, password, redirect: false });
     setLoading(false);
-
     if (res?.error) {
       setError("Email o contraseña incorrectos");
     } else {
@@ -36,80 +33,58 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg border p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Iniciar Sesión</h1>
-            <p className="text-gray-500 mt-1">Accede a tu cuenta NovaTech</p>
+    <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-2">
+          <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-2">
+            <span className="text-primary-foreground font-bold text-xl">N</span>
           </div>
-
+          <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
+          <CardDescription>Accede a tu cuenta NovaTech</CardDescription>
+        </CardHeader>
+        <CardContent>
           {unauthorized && (
-            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
-              Necesitas ser administrador para acceder a esa página.
+            <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-sm text-amber-600 dark:text-amber-400 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" /> Necesitas ser administrador para acceder a esa página.
             </div>
           )}
-
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-              {error}
+            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" /> {error}
             </div>
           )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="tu@email.com"
-              />
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="tu@email.com" className="pl-9" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="••••••••"
-              />
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="pl-9" />
+              </div>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 transition"
-            >
-              {loading ? "Ingresando..." : "Ingresar"}
-            </button>
+            <Button type="submit" className="w-full gap-2" size="lg" disabled={loading}>
+              <LogIn className="h-4 w-4" /> {loading ? "Ingresando..." : "Ingresar"}
+            </Button>
           </form>
-
-          <p className="text-center text-sm text-gray-500 mt-6">
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-sm text-muted-foreground">
             ¿No tienes cuenta?{" "}
-            <Link href="/register" className="text-indigo-600 font-medium hover:underline">
-              Regístrate aquí
-            </Link>
+            <Link href="/register" className="text-primary font-medium hover:underline">Regístrate</Link>
           </p>
-
-          <div className="mt-6 p-3 bg-gray-50 rounded-lg text-xs text-gray-500">
-            <p className="font-medium mb-1">Demo Admin:</p>
-            <p>Email: admin@novatech.bo</p>
-            <p>Password: admin123</p>
-          </div>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
 
 export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-[70vh] flex items-center justify-center"><p>Cargando...</p></div>}>
-      <LoginForm />
-    </Suspense>
-  );
+  return <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}><LoginForm /></Suspense>;
 }
+

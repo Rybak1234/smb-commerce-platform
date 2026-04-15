@@ -47,7 +47,14 @@ export async function POST(req: NextRequest) {
   }
 
   const review = await prisma.review.create({
-    data: { rating, comment, userId, productId },
+    data: { rating, comment, userId, productId, title: comment?.substring(0, 60) || null },
+  });
+
+  // Update product avg rating
+  const agg = await prisma.review.aggregate({ where: { productId }, _avg: { rating: true }, _count: true });
+  await prisma.product.update({
+    where: { id: productId },
+    data: { avgRating: agg._avg.rating || 0, reviewCount: agg._count },
   });
 
   return NextResponse.json(review, { status: 201 });
