@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface Props {
   product: { id: string; name: string; price: number; image?: string | null };
@@ -27,6 +28,7 @@ export default function AddToCartButton({ product }: Props) {
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cart-updated"));
     setAdded(true);
+    toast.success(`${product.name} agregado al carrito`, { icon: '🛒' });
     setTimeout(() => setAdded(false), 1200);
   };
 

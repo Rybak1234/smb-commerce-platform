@@ -4,6 +4,7 @@ import Link from "next/link";
 import CartBadge from "@/components/CartBadge";
 import AuthProvider from "@/components/AuthProvider";
 import UserMenu from "@/components/UserMenu";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "NovaTech · Accesorios Tecnológicos",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
+        <Toaster position="top-right" toastOptions={{ style: { borderRadius: '12px', padding: '12px 16px', fontSize: '14px' } }} />
         {/* ── NAV ── */}
         <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
           <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">

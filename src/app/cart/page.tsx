@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface CartItem {
   id: string;
@@ -37,14 +38,17 @@ export default function CartPage() {
   };
 
   const remove = (id: string) => {
+    const item = items.find((i) => i.id === id);
     const updated = items.filter((i) => i.id !== id);
     setItems(updated);
     saveCart(updated);
+    if (item) toast.success(`${item.name} eliminado`, { icon: '🗑️' });
   };
 
   const clearCart = () => {
     setItems([]);
     saveCart([]);
+    toast.success('Carrito vaciado', { icon: '🛒' });
   };
 
   const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -63,7 +67,7 @@ export default function CartPage() {
         window.location.href = data.url;
       }
     } catch {
-      alert("Error al procesar el pago");
+      toast.error("Error al procesar el pago");
     } finally {
       setLoading(false);
     }
