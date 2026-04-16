@@ -38,6 +38,7 @@ model User {
   refundRequests RefundRequest[]
   referrals      Referral[]      @relation("referrer")
   referredUsers  Referral[]      @relation("referred")
+  movements      Movement[]
 }
 
 model Address {
@@ -157,6 +158,7 @@ model Product {
   variants      ProductVariant[]
   questions     ProductQuestion[]
   collections   CollectionProduct[]
+  movements     Movement[]
 }
 
 model ProductVariant {
@@ -384,6 +386,24 @@ model ActivityLog {
   details    String?
   ip         String?
   createdAt  DateTime @default(now())
+}
+
+// ─── INVENTORY MOVEMENTS (shared with inventory app) ─────
+model Movement {
+  id        String   @id @default(cuid())
+  type      String   // "entry" | "exit"
+  quantity  Int
+  reason    String   @default("")
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId])
 }
 
 // ─── SETTINGS ────────────────────────────────────────────

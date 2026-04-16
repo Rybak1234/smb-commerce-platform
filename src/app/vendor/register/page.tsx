@@ -45,7 +45,7 @@ export default function VendorRegister() {
       <Card>
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center"><Store className="h-7 w-7 text-primary" /></div>
-          <CardTitle className="text-2xl">Vende en NovaTech</CardTitle>
+          <CardTitle className="text-2xl">Vende en SurtiBolivia</CardTitle>
           <CardDescription>Registra tu tienda y empieza a vender a miles de clientes</CardDescription>
         </CardHeader>
         <CardContent>

@@ -2,14 +2,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
-import { Star, ArrowRight, ShoppingBag, Truck, Shield, Headphones, Zap, Gift, TrendingUp } from "lucide-react";
+import { Star, ArrowRight, ShoppingBag, Truck, Shield, Headphones, Zap, Gift, TrendingUp, MapPin } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function StorePage({
   searchParams,
 }: {
-  searchParams: { q?: string; category?: string; featured?: string; page?: string; sort?: string };
+  searchParams: { q?: string; category?: string; featured?: string; page?: string; sort?: string; departamento?: string };
 }) {
   const page = parseInt(searchParams.page || "1");
   const pageSize = 12;
@@ -26,6 +26,9 @@ export default async function StorePage({
     where.category = { slug: searchParams.category };
   }
   if (searchParams.featured === "true") where.featured = true;
+  if (searchParams.departamento) {
+    where.tags = { has: searchParams.departamento };
+  }
 
   let orderBy: any = { createdAt: "desc" };
   if (searchParams.sort === "price-asc") orderBy = { price: "asc" };
@@ -33,12 +36,12 @@ export default async function StorePage({
   if (searchParams.sort === "popular") orderBy = { salesCount: "desc" };
   if (searchParams.sort === "rating") orderBy = { avgRating: "desc" };
 
-  const isFiltered = !!(searchParams.q || searchParams.category || searchParams.featured);
+  const isFiltered = !!(searchParams.q || searchParams.category || searchParams.featured || searchParams.departamento);
 
   const [products, totalProducts, categories, featuredProducts, trendingProducts, banners, flashDeals] = await Promise.all([
     prisma.product.findMany({ where, include: { category: true, vendor: { select: { storeName: true } } }, orderBy, skip: (page - 1) * pageSize, take: pageSize }),
     prisma.product.count({ where }),
-    prisma.category.findMany({ where: { active: true, parentId: null }, include: { _count: { select: { products: true } } }, orderBy: { order: "asc" }, take: 8 }),
+    prisma.category.findMany({ where: { active: true, parentId: null }, include: { _count: { select: { products: true } } }, orderBy: { order: "asc" }, take: 12 }),
     isFiltered ? Promise.resolve([]) : prisma.product.findMany({ where: { featured: true, active: true }, include: { category: true, vendor: { select: { storeName: true } } }, take: 8 }),
     isFiltered ? Promise.resolve([]) : prisma.product.findMany({ where: { trending: true, active: true }, include: { category: true, vendor: { select: { storeName: true } } }, take: 4 }),
     isFiltered ? Promise.resolve([]) : prisma.banner.findMany({ where: { active: true, position: "hero" }, orderBy: { order: "asc" }, take: 3 }),
@@ -47,29 +50,41 @@ export default async function StorePage({
 
   const totalPages = Math.ceil(totalProducts / pageSize);
 
+  const departamentos = [
+    { nombre: "La Paz", color: "from-indigo-500 to-violet-600" },
+    { nombre: "Cochabamba", color: "from-amber-500 to-orange-600" },
+    { nombre: "Santa Cruz", color: "from-emerald-500 to-teal-600" },
+    { nombre: "Oruro", color: "from-purple-500 to-fuchsia-600" },
+    { nombre: "Potosí", color: "from-rose-500 to-red-600" },
+    { nombre: "Tarija", color: "from-pink-500 to-rose-600" },
+    { nombre: "Chuquisaca", color: "from-yellow-500 to-amber-600" },
+    { nombre: "Beni", color: "from-cyan-500 to-blue-600" },
+    { nombre: "Pando", color: "from-lime-500 to-green-600" },
+  ];
+
   return (
     <div className="min-h-screen">
       {!isFiltered && (
-        <section className="relative bg-gradient-to-br from-primary via-primary/90 to-violet-700 dark:from-primary/80 dark:via-violet-800 dark:to-purple-900 text-white overflow-hidden">
+        <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-900 dark:via-violet-900 dark:to-purple-900 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 animate-pulse" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 animate-pulse" />
           </div>
           <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
             <div className="max-w-2xl">
-              <div className="inline-flex px-4 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-xs font-medium mb-6 border border-white/20">
-                <Zap className="h-3 w-3 mr-1.5" /> Marketplace Multi-Vendor
+              <div className="inline-flex px-4 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-xs font-medium mb-6 border border-white/20 animate-slide-down">
+                El supermercado de la familia boliviana
               </div>
-              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-                Tecnología que <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-yellow-100">transforma</span>
+              <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight animate-slide-up">
+                Tu mercado de <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-200 to-violet-200">confianza</span>
               </h1>
-              <p className="text-white/80 text-lg mb-8 max-w-lg">Múltiples vendedores verificados, ofertas flash, programa de lealtad y los mejores precios de Bolivia.</p>
-              <div className="flex gap-3 flex-wrap">
-                <a href="#productos" className="inline-flex items-center gap-2 bg-white text-primary font-bold px-6 py-3.5 rounded-xl hover:bg-white/90 transition-all text-sm shadow-lg">
-                  <ShoppingBag className="h-4 w-4" /> Explorar Tienda
+              <p className="text-white/80 text-lg mb-8 max-w-lg animate-slide-up stagger-2">Abarrotes, frutas frescas, lacteos, carnes y una seccion exclusiva de Moda Boliviana inspirada en nuestros 9 departamentos.</p>
+              <div className="flex gap-3 flex-wrap animate-slide-up stagger-3">
+                <a href="#productos" className="inline-flex items-center gap-2 bg-white text-indigo-800 font-bold px-6 py-3.5 rounded-xl hover:bg-white/90 hover:scale-105 active:scale-95 transition-all text-sm shadow-lg">
+                  <ShoppingBag className="h-4 w-4" /> Empezar a Comprar
                 </a>
-                <Link href="/vendor/register" className="inline-flex items-center gap-2 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-white/10 transition-all text-sm backdrop-blur-sm">
-                  Vende con Nosotros <ArrowRight className="h-4 w-4" />
+                <Link href="/?category=moda-boliviana" className="inline-flex items-center gap-2 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-white/10 hover:scale-105 active:scale-95 transition-all text-sm backdrop-blur-sm">
+                  Ver Moda Boliviana <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -81,12 +96,12 @@ export default async function StorePage({
         {!isFiltered && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 -mt-8 relative z-20 mb-10">
             {[
-              { icon: Truck, title: "Envío Gratis", desc: "En pedidos +Bs. 200" },
-              { icon: Shield, title: "Pago Seguro", desc: "Stripe protegido" },
-              { icon: Gift, title: "Programa de Lealtad", desc: "Gana puntos" },
-              { icon: Headphones, title: "Soporte 24/7", desc: "Siempre disponibles" },
-            ].map((item) => (
-              <div key={item.title} className="flex items-center gap-3 bg-card rounded-xl p-4 border shadow-sm">
+              { icon: Truck, title: "Envio a Domicilio", desc: "A todo el pais" },
+              { icon: Shield, title: "Productos Frescos", desc: "Calidad garantizada" },
+              { icon: Gift, title: "Ofertas Semanales", desc: "Los mejores precios" },
+              { icon: Headphones, title: "Soporte WhatsApp", desc: "+591 2 123 4567" },
+            ].map((item, i) => (
+              <div key={item.title} className={`flex items-center gap-3 bg-card rounded-xl p-4 border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 animate-slide-up stagger-${i + 1}`}>
                 <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <item.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -102,16 +117,16 @@ export default async function StorePage({
         {!isFiltered && categories.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Categorías</h2>
+              <h2 className="text-2xl font-bold">Secciones</h2>
               <Link href="/" className="text-sm text-primary hover:underline flex items-center gap-1">Ver todas <ArrowRight className="h-3 w-3" /></Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
               {categories.map((cat) => (
-                <Link key={cat.id} href={`/?category=${cat.slug}`} className="flex flex-col items-center gap-2.5 bg-card rounded-xl border p-4 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 transition-all duration-200">
+                <Link key={cat.id} href={`/?category=${cat.slug}`} className="flex flex-col items-center gap-2.5 bg-card rounded-xl border p-4 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1.5 transition-all duration-300 animate-zoom-in">
                   {cat.image ? (
-                    <div className="relative h-12 w-12 rounded-lg overflow-hidden"><Image src={cat.image} alt={cat.name} fill className="object-cover" /></div>
+                    <div className="relative h-14 w-14 rounded-lg overflow-hidden"><Image src={cat.image} alt={cat.name} fill className="object-cover" /></div>
                   ) : (
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingBag className="h-6 w-6 text-primary" /></div>
+                    <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingBag className="h-7 w-7 text-primary" /></div>
                   )}
                   <div className="text-center">
                     <span className="text-xs font-medium">{cat.name}</span>
@@ -123,10 +138,34 @@ export default async function StorePage({
           </section>
         )}
 
+        {/* MODA BOLIVIANA - 9 Departamentos */}
+        {!isFiltered && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold flex items-center gap-2"><MapPin className="h-5 w-5 text-primary" /> Moda Boliviana</h2>
+                <p className="text-sm text-muted-foreground mt-1">Inspirada en los 9 departamentos de Bolivia</p>
+              </div>
+              <Link href="/?category=moda-boliviana" className="text-sm text-primary hover:underline flex items-center gap-1">Ver colección <ArrowRight className="h-3 w-3" /></Link>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+              {departamentos.map((dep) => (
+                <Link key={dep.nombre} href={`/?departamento=${dep.nombre.toLowerCase().replace(/\s/g, "-")}`} className="group relative overflow-hidden rounded-xl p-4 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${dep.color} opacity-90 group-hover:opacity-100 transition-opacity`} />
+                  <div className="relative z-10 text-white">
+                    <MapPin className="h-5 w-5 mx-auto mb-1.5 opacity-80" />
+                    <span className="text-[10px] font-bold uppercase tracking-wide">{dep.nombre}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {!isFiltered && flashDeals.length > 0 && (
           <section className="mb-12">
             <div className="bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-4"><Zap className="h-6 w-6" /><h2 className="text-xl font-bold">Ofertas Flash</h2></div>
+              <div className="flex items-center gap-3 mb-4"><Zap className="h-6 w-6" /><h2 className="text-xl font-bold">Ofertas del Día</h2></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {flashDeals.map((deal: any) => (
                   <div key={deal.id} className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
@@ -143,7 +182,7 @@ export default async function StorePage({
         {!isFiltered && featuredProducts.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <div><h2 className="text-2xl font-bold">Productos Destacados</h2><p className="text-sm text-muted-foreground mt-1">Selección premium de nuestros vendedores</p></div>
+              <div><h2 className="text-2xl font-bold">Lo Más Buscado</h2><p className="text-sm text-muted-foreground mt-1">Los favoritos de nuestros clientes</p></div>
               <Link href="/?featured=true" className="text-sm text-primary hover:underline flex items-center gap-1">Ver todos <ArrowRight className="h-3 w-3" /></Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -156,7 +195,7 @@ export default async function StorePage({
           <section className="mb-12">
             <div className="flex items-center gap-2 mb-6"><TrendingUp className="h-5 w-5 text-primary" /><h2 className="text-2xl font-bold">Tendencia</h2></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {trendingProducts.map((product) => (<ProductCardServer key={product.id} product={product} badge="Trending" />))}
+              {trendingProducts.map((product) => (<ProductCardServer key={product.id} product={product} badge="Popular" />))}
             </div>
           </section>
         )}
@@ -166,6 +205,7 @@ export default async function StorePage({
             <span className="bg-primary/10 text-primary px-2.5 py-1 rounded-lg font-medium">{totalProducts}</span>
             <span className="text-muted-foreground">resultado{totalProducts !== 1 ? "s" : ""}</span>
             {searchParams.q && <span className="text-muted-foreground">para &quot;{searchParams.q}&quot;</span>}
+            {searchParams.departamento && <span className="text-muted-foreground">· departamento: {searchParams.departamento}</span>}
             <Link href="/" className="ml-auto text-primary hover:underline text-xs font-medium">Limpiar filtros</Link>
           </div>
         )}
@@ -205,7 +245,7 @@ export default async function StorePage({
         </section>
 
         {!isFiltered && (
-          <section className="bg-gradient-to-r from-primary/10 to-violet-500/10 dark:from-primary/5 dark:to-violet-500/5 rounded-2xl p-8 sm:p-12 mb-8 border">
+          <section className="bg-gradient-to-r from-primary/10 to-accent/10 dark:from-primary/5 dark:to-accent/5 rounded-2xl p-8 sm:p-12 mb-8 border animate-slide-up">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3">No te pierdas nada</h2>
               <p className="text-muted-foreground mb-6">Suscríbete y recibe ofertas exclusivas, novedades y descuentos directamente en tu email.</p>
@@ -225,7 +265,7 @@ export default async function StorePage({
 function ProductCardServer({ product, badge }: { product: any; badge?: string }) {
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : 0;
   return (
-    <div className="group bg-card rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border">
+    <div className="group bg-card rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border hover:-translate-y-1">
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block overflow-hidden">
           {product.image ? (

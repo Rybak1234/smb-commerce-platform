@@ -7,8 +7,8 @@ import { StoreHeader } from "@/components/StoreHeader";
 import { StoreFooter } from "@/components/StoreFooter";
 
 export const metadata: Metadata = {
-  title: "NovaTech · Marketplace Tecnológico",
-  description: "Marketplace multi-vendor de tecnología y accesorios en Bolivia. Múltiples vendedores verificados, ofertas flash, programa de lealtad y envío a todo el país.",
+  title: "SurtiBolivia · Tu Supermercado en Línea",
+  description: "El supermercado de la familia boliviana. Abarrotes, frutas, lácteos, carnes, bebidas y una sección exclusiva de Moda Boliviana inspirada en los 9 departamentos. Envío a todo Bolivia.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

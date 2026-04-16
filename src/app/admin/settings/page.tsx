@@ -8,8 +8,8 @@ import { Settings, Save } from "lucide-react";
 import { toast } from "sonner";
 
 const defaultSettings = [
-  { key: "store_name", label: "Nombre de la Tienda", category: "general", value: "NovaTech" },
-  { key: "store_email", label: "Email de Contacto", category: "general", value: "soporte@novatech.bo" },
+  { key: "store_name", label: "Nombre de la Tienda", category: "general", value: "SurtiBolivia" },
+  { key: "store_email", label: "Email de Contacto", category: "general", value: "hola@surtibolivia.bo" },
   { key: "store_phone", label: "Teléfono", category: "general", value: "+591 2 123 4567" },
   { key: "store_address", label: "Dirección", category: "general", value: "La Paz, Bolivia" },
   { key: "free_shipping_min", label: "Envío Gratis (mín. Bs.)", category: "shipping", value: "200" },

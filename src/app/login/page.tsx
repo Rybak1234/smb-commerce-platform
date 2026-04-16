@@ -37,10 +37,10 @@ function LoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-2">
-            <span className="text-primary-foreground font-bold text-xl">N</span>
+            <span className="text-primary-foreground font-bold text-xl">🛒</span>
           </div>
           <CardTitle className="text-2xl">Iniciar Sesión</CardTitle>
-          <CardDescription>Accede a tu cuenta NovaTech</CardDescription>
+          <CardDescription>Accede a tu cuenta SurtiBolivia</CardDescription>
         </CardHeader>
         <CardContent>
           {unauthorized && (

@@ -57,7 +57,7 @@ export default async function AdminProductsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{p.category?.name || "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">{p.vendor?.storeName || "NovaTech"}</td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">{p.vendor?.storeName || "SurtiBolivia"}</td>
                 <td className="px-4 py-3 text-right font-medium">{formatPrice(p.price)}</td>
                 <td className="px-4 py-3 text-right">
                   <span className={p.stock <= (p.lowStockThreshold || 5) && p.active ? "text-orange-500 font-semibold flex items-center justify-end gap-1" : ""}>

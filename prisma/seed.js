@@ -4,35 +4,35 @@ const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding NovaTech Marketplace...");
+  console.log("🛒 Seeding SurtiBolivia — Supermercado en Línea...");
 
-  // ─── USERS ─────────────────────────
   const hash = await bcrypt.hash("Password123!", 10);
 
+  // ─── USERS ──────────────────────────
   const admin = await prisma.user.upsert({
-    where: { email: "admin@novatech.bo" },
+    where: { email: "admin@surtibolivia.bo" },
     update: {},
-    create: { email: "admin@novatech.bo", password: hash, name: "Admin NovaTech", role: "admin", loyaltyPoints: 0, referralCode: "NTADMIN" },
+    create: { email: "admin@surtibolivia.bo", password: hash, name: "Rodrigo Huanca", role: "admin", avatar: "https://i.pravatar.cc/150?u=admin@surtibolivia.bo", loyaltyPoints: 0, referralCode: "SBADM1" },
   });
   const vendor1User = await prisma.user.upsert({
-    where: { email: "vendedor@novatech.bo" },
+    where: { email: "mercado@surtibolivia.bo" },
     update: {},
-    create: { email: "vendedor@novatech.bo", password: hash, name: "Carlos Mendoza", role: "vendor", loyaltyPoints: 150, referralCode: "CARLOS1" },
+    create: { email: "mercado@surtibolivia.bo", password: hash, name: "Carlos Mendoza", role: "vendor", avatar: "https://i.pravatar.cc/150?u=mercado@surtibolivia.bo", loyaltyPoints: 150, referralCode: "CARL0S" },
   });
   const vendor2User = await prisma.user.upsert({
-    where: { email: "tienda@novatech.bo" },
+    where: { email: "moda@surtibolivia.bo" },
     update: {},
-    create: { email: "tienda@novatech.bo", password: hash, name: "María Quispe", role: "vendor", loyaltyPoints: 200, referralCode: "MARIA1" },
+    create: { email: "moda@surtibolivia.bo", password: hash, name: "María Quispe", role: "vendor", avatar: "https://i.pravatar.cc/150?u=moda@surtibolivia.bo", loyaltyPoints: 200, referralCode: "MAR1A1" },
   });
   const customer = await prisma.user.upsert({
-    where: { email: "cliente@novatech.bo" },
+    where: { email: "cliente@surtibolivia.bo" },
     update: {},
-    create: { email: "cliente@novatech.bo", password: hash, name: "Pedro López", role: "customer", loyaltyPoints: 320, referralCode: "PEDRO1" },
+    create: { email: "cliente@surtibolivia.bo", password: hash, name: "Pedro López", role: "customer", avatar: "https://i.pravatar.cc/150?u=cliente@surtibolivia.bo", loyaltyPoints: 320, referralCode: "PEDR01" },
   });
   const customer2 = await prisma.user.upsert({
-    where: { email: "ana@novatech.bo" },
+    where: { email: "ana@surtibolivia.bo" },
     update: {},
-    create: { email: "ana@novatech.bo", password: hash, name: "Ana Torres", role: "customer", loyaltyPoints: 85, referralCode: "ANA1" },
+    create: { email: "ana@surtibolivia.bo", password: hash, name: "Ana Torres", role: "customer", avatar: "https://i.pravatar.cc/150?u=ana@surtibolivia.bo", loyaltyPoints: 85, referralCode: "ANA001" },
   });
 
   // ─── VENDORS ───────────────────────
@@ -41,19 +41,19 @@ async function main() {
     update: {},
     create: {
       userId: vendor1User.id,
-      storeName: "TechPlus Bolivia",
-      slug: "techplus-bolivia",
-      description: "Los mejores productos de tecnología a precios accesibles",
-      logo: "https://ui-avatars.com/api/?name=TP&background=7c3aed&color=fff&size=128",
-      banner: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=400&fit=crop",
-      phone: "+591 71234567",
-      email: "ventas@techplus.bo",
+      storeName: "Mercado Central SB",
+      slug: "mercado-central-sb",
+      description: "Productos frescos del Mercado Central de La Paz. Frutas, verduras, carnes, abarrotes y productos típicos bolivianos.",
+      logo: "https://ui-avatars.com/api/?name=MC&background=166534&color=fff&size=128",
+      banner: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=400&fit=crop",
+      phone: "+591 2 2444567",
+      email: "mercado@surtibolivia.bo",
       commissionRate: 8,
       status: "approved",
       subscriptionTier: "pro",
       verified: true,
-      totalSales: 156,
-      totalRevenue: 45600,
+      totalSales: 450,
+      totalRevenue: 89500,
     },
   });
   const vendor2 = await prisma.vendor.upsert({
@@ -61,418 +61,147 @@ async function main() {
     update: {},
     create: {
       userId: vendor2User.id,
-      storeName: "ModaStyle",
-      slug: "modastyle",
-      description: "Moda y accesorios para toda la familia",
-      logo: "https://ui-avatars.com/api/?name=MS&background=ec4899&color=fff&size=128",
-      phone: "+591 76543210",
-      email: "info@modastyle.bo",
+      storeName: "Moda 9 Departamentos",
+      slug: "moda-9-departamentos",
+      description: "Moda boliviana inspirada en los 9 departamentos. Aguayos, tejidos, polleras modernas y diseño contemporáneo con identidad boliviana.",
+      logo: "https://ui-avatars.com/api/?name=M9&background=d97706&color=fff&size=128",
+      phone: "+591 3 3567890",
+      email: "moda@surtibolivia.bo",
       commissionRate: 10,
       status: "approved",
-      subscriptionTier: "free",
+      subscriptionTier: "pro",
       verified: true,
-      totalSales: 89,
-      totalRevenue: 23400,
+      totalSales: 278,
+      totalRevenue: 156700,
     },
   });
 
   // ─── CATEGORIES ────────────────────
   const cats = {};
   const catData = [
-    { name: "Electrónica", slug: "electronica", description: "Dispositivos y gadgets electrónicos", image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop" },
-    { name: "Computadoras", slug: "computadoras", description: "Laptops, PCs y accesorios", image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop" },
-    { name: "Smartphones", slug: "smartphones", description: "Teléfonos y tablets", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop" },
-    { name: "Audio", slug: "audio", description: "Auriculares, parlantes y más", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop" },
-    { name: "Gaming", slug: "gaming", description: "Consolas, juegos y accesorios", image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop" },
-    { name: "Ropa", slug: "ropa", description: "Moda para hombres y mujeres", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop" },
-    { name: "Hogar", slug: "hogar", description: "Decoración y artículos para el hogar", image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400&h=300&fit=crop" },
-    { name: "Deportes", slug: "deportes", description: "Equipamiento deportivo", image: "https://images.unsplash.com/photo-1461896836934-bd45ba7b4b94?w=400&h=300&fit=crop" },
+    { name: "Abarrotes", slug: "abarrotes", description: "Arroz, azúcar, aceite, fideos, enlatados y productos de despensa", image: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=400&h=300&fit=crop", order: 1 },
+    { name: "Lácteos y Huevos", slug: "lacteos-huevos", description: "Leche, yogur, queso, mantequilla y huevos frescos", image: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&h=300&fit=crop", order: 2 },
+    { name: "Carnes y Embutidos", slug: "carnes-embutidos", description: "Res, pollo, cerdo, embutidos y carnes preparadas", image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop", order: 3 },
+    { name: "Frutas y Verduras", slug: "frutas-verduras", description: "Frutas y verduras frescas de los valles y yungas", image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=300&fit=crop", order: 4 },
+    { name: "Panadería", slug: "panaderia", description: "Pan fresco, marraquetas, galletas y repostería artesanal", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop", order: 5 },
+    { name: "Bebidas", slug: "bebidas", description: "Aguas, jugos, refrescos, cervezas y bebidas bolivianas", image: "https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?w=400&h=300&fit=crop", order: 6 },
+    { name: "Limpieza y Hogar", slug: "limpieza-hogar", description: "Detergentes, desinfectantes, limpiadores y artículos del hogar", image: "https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=400&h=300&fit=crop", order: 7 },
+    { name: "Cuidado Personal", slug: "cuidado-personal", description: "Shampoo, jabón, cremas, higiene y cuidado personal", image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=300&fit=crop", order: 8 },
+    { name: "Moda Boliviana", slug: "moda-boliviana", description: "Moda inspirada en los 9 departamentos de Bolivia. Aguayos, tejidos y diseño contemporáneo", image: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=300&fit=crop", order: 9 },
+    { name: "Electrónica", slug: "electronica", description: "Electrodomésticos, celulares y tecnología para el hogar", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop", order: 10 },
   ];
   for (const c of catData) {
     cats[c.slug] = await prisma.category.upsert({ where: { slug: c.slug }, update: {}, create: c });
   }
 
-  // ─── PRODUCTS ──────────────────────
+  // ─── PRODUCTOS ──────────────────────
   const products = [];
   const productData = [
-    {
-      name: "Laptop Ultrabook Pro 15",
-      slug: "laptop-ultrabook-pro-15",
-      description: "Laptop ultraligera con procesador Intel i7 de 13ª generación, 16GB RAM, 512GB SSD, pantalla Full HD IPS de 15.6 pulgadas. Ideal para profesionales y estudiantes que necesitan rendimiento y portabilidad.",
-      price: 6999,
-      originalPrice: 8500,
-      comparePrice: 8500,
-      costPrice: 4500,
-      images: ["https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800", "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800"],
-      categoryId: cats["computadoras"].id,
-      vendorId: vendor1.id,
-      brand: "TechPlus",
-      tags: ["laptop", "ultrabook", "intel", "i7"],
-      badge: "Más vendido",
-      featured: true,
-      trending: true,
-      stock: 25,
-      sku: "LP-UBP-15",
-      weight: 1.8,
-      avgRating: 4.7,
-      reviewCount: 34,
-      salesCount: 89,
-      views: 1560,
-    },
-    {
-      name: "Smartphone Galaxy Nova X",
-      slug: "smartphone-galaxy-nova-x",
-      description: "Smartphone de última generación con cámara de 108MP, pantalla AMOLED de 6.7 pulgadas, 256GB de almacenamiento y batería de 5000mAh con carga rápida de 65W.",
-      price: 4599,
-      originalPrice: 5200,
-      comparePrice: 5200,
-      costPrice: 3000,
-      images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800", "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=800"],
-      categoryId: cats["smartphones"].id,
-      vendorId: vendor1.id,
-      brand: "Galaxy",
-      tags: ["smartphone", "android", "5g", "cámara"],
-      badge: "Nuevo",
-      featured: true,
-      trending: true,
-      stock: 40,
-      sku: "SP-GNX-256",
-      weight: 0.21,
-      avgRating: 4.5,
-      reviewCount: 67,
-      salesCount: 156,
-      views: 3240,
-    },
-    {
-      name: "Auriculares Wireless Pro",
-      slug: "auriculares-wireless-pro",
-      description: "Auriculares inalámbricos con cancelación activa de ruido, 40 horas de batería, Bluetooth 5.3, micrófono incorporado y estuche de carga premium.",
-      price: 899,
-      originalPrice: 1200,
-      comparePrice: 1200,
-      costPrice: 450,
-      images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800", "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800"],
-      categoryId: cats["audio"].id,
-      vendorId: vendor1.id,
-      brand: "SoundMax",
-      tags: ["auriculares", "bluetooth", "inalámbrico", "anc"],
-      badge: "Oferta",
-      featured: true,
-      stock: 80,
-      sku: "AU-WP-BT53",
-      weight: 0.28,
-      avgRating: 4.8,
-      reviewCount: 112,
-      salesCount: 340,
-      views: 5670,
-    },
-    {
-      name: "Monitor Gaming 27\" 144Hz",
-      slug: "monitor-gaming-27-144hz",
-      description: "Monitor gaming QHD de 27 pulgadas, 144Hz, 1ms de respuesta, panel IPS, HDR400, compatible con G-Sync y FreeSync. Colores vibrantes para gaming competitivo.",
-      price: 2499,
-      originalPrice: 3200,
-      comparePrice: 3200,
-      costPrice: 1600,
-      images: ["https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800"],
-      categoryId: cats["gaming"].id,
-      vendorId: vendor1.id,
-      brand: "ViewMaster",
-      tags: ["monitor", "gaming", "144hz", "qhd"],
-      featured: true,
-      trending: true,
-      stock: 15,
-      sku: "MO-G27-144",
-      weight: 6.2,
-      avgRating: 4.6,
-      reviewCount: 28,
-      salesCount: 45,
-      views: 2100,
-    },
-    {
-      name: "Teclado Mecánico RGB",
-      slug: "teclado-mecanico-rgb",
-      description: "Teclado mecánico con switches Cherry MX, iluminación RGB por tecla, marco de aluminio, reposamuñecas magnético y modo gaming dedicado.",
-      price: 599,
-      originalPrice: 750,
-      costPrice: 300,
-      images: ["https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=800"],
-      categoryId: cats["gaming"].id,
-      vendorId: vendor1.id,
-      brand: "KeyPro",
-      tags: ["teclado", "mecánico", "rgb", "cherry"],
-      stock: 45,
-      sku: "KB-MEC-RGB",
-      weight: 1.1,
-      avgRating: 4.4,
-      reviewCount: 56,
-      salesCount: 120,
-      views: 1890,
-    },
-    {
-      name: "Tablet Creative 10\"",
-      slug: "tablet-creative-10",
-      description: "Tablet para creativos con pantalla de 10.5 pulgadas, lápiz incluido, 128GB, procesador octa-core. Perfecta para dibujo, diseño y entretenimiento.",
-      price: 2999,
-      originalPrice: 3500,
-      costPrice: 1800,
-      images: ["https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800"],
-      categoryId: cats["electronica"].id,
-      vendorId: vendor1.id,
-      brand: "CreativeTab",
-      tags: ["tablet", "dibujo", "diseño"],
-      badge: "Popular",
-      trending: true,
-      stock: 20,
-      sku: "TB-CR-10",
-      weight: 0.48,
-      avgRating: 4.3,
-      reviewCount: 19,
-      salesCount: 35,
-      views: 980,
-    },
-    {
-      name: "Parlante Bluetooth Premium",
-      slug: "parlante-bluetooth-premium",
-      description: "Parlante portátil con sonido 360°, resistente al agua IPX7, 20 horas de batería, Bass Boost, y conexión multi-dispositivo.",
-      price: 449,
-      originalPrice: 600,
-      costPrice: 200,
-      images: ["https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800"],
-      categoryId: cats["audio"].id,
-      vendorId: vendor1.id,
-      brand: "BoomBox",
-      tags: ["parlante", "bluetooth", "portátil", "ipx7"],
-      stock: 60,
-      sku: "PL-BT-PM",
-      weight: 0.72,
-      avgRating: 4.2,
-      reviewCount: 45,
-      salesCount: 89,
-      views: 1340,
-    },
-    {
-      name: "Camiseta Premium Algodón",
-      slug: "camiseta-premium-algodon",
-      description: "Camiseta de algodón orgánico 100%, corte regular, disponible en múltiples colores. Suave, transpirable y duradera.",
-      price: 149,
-      originalPrice: 200,
-      costPrice: 50,
-      images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800", "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800"],
-      categoryId: cats["ropa"].id,
-      vendorId: vendor2.id,
-      brand: "ModaStyle",
-      tags: ["camiseta", "algodón", "orgánico"],
-      featured: true,
-      stock: 200,
-      sku: "CM-PA-REG",
-      weight: 0.2,
-      avgRating: 4.1,
-      reviewCount: 78,
-      salesCount: 234,
-      views: 3450,
-    },
-    {
-      name: "Zapatillas Running Pro",
-      slug: "zapatillas-running-pro",
-      description: "Zapatillas deportivas con amortiguación de gel, suela antideslizante, malla transpirable y soporte de arco. Ideales para correr y entrenar.",
-      price: 699,
-      originalPrice: 900,
-      costPrice: 350,
-      images: ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800"],
-      categoryId: cats["deportes"].id,
-      vendorId: vendor2.id,
-      brand: "RunMax",
-      tags: ["zapatillas", "running", "deporte"],
-      badge: "Más vendido",
-      trending: true,
-      stock: 55,
-      sku: "ZP-RUN-PRO",
-      weight: 0.35,
-      avgRating: 4.6,
-      reviewCount: 92,
-      salesCount: 178,
-      views: 2890,
-    },
-    {
-      name: "Mochila Urban 30L",
-      slug: "mochila-urban-30l",
-      description: "Mochila urbana de 30 litros con compartimiento para laptop de 15.6\", bolsillo antirrobo, puerto USB integrado y material resistente al agua.",
-      price: 349,
-      originalPrice: 450,
-      costPrice: 150,
-      images: ["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800"],
-      categoryId: cats["deportes"].id,
-      vendorId: vendor2.id,
-      brand: "UrbanPack",
-      tags: ["mochila", "urban", "laptop", "antirrobo"],
-      stock: 70,
-      sku: "MC-URB-30",
-      weight: 0.9,
-      avgRating: 4.3,
-      reviewCount: 41,
-      salesCount: 67,
-      views: 1120,
-    },
-    {
-      name: "Lámpara LED Inteligente",
-      slug: "lampara-led-inteligente",
-      description: "Lámpara LED WiFi con 16 millones de colores, compatible con Alexa y Google Home, programable por app, ahorro de energía del 80%.",
-      price: 199,
-      originalPrice: 280,
-      costPrice: 80,
-      images: ["https://images.unsplash.com/photo-1507473885765-e6ed057ab6fe?w=800"],
-      categoryId: cats["hogar"].id,
-      vendorId: vendor2.id,
-      brand: "SmartHome",
-      tags: ["lámpara", "led", "smart", "wifi"],
-      stock: 100,
-      sku: "LM-LED-SM",
-      weight: 0.15,
-      avgRating: 4.0,
-      reviewCount: 23,
-      salesCount: 56,
-      views: 870,
-    },
-    {
-      name: "Webcam 4K Pro Stream",
-      slug: "webcam-4k-pro-stream",
-      description: "Webcam 4K con micrófono dual, corrección de luz automática, autofoco, campo de visión de 90°. Perfecta para streaming y videoconferencias.",
-      price: 799,
-      originalPrice: 950,
-      costPrice: 400,
-      images: ["https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=800"],
-      categoryId: cats["computadoras"].id,
-      vendorId: vendor1.id,
-      brand: "StreamVision",
-      tags: ["webcam", "4k", "streaming"],
-      stock: 30,
-      sku: "WC-4K-PS",
-      weight: 0.16,
-      avgRating: 4.5,
-      reviewCount: 15,
-      salesCount: 42,
-      views: 650,
-    },
-    {
-      name: "Mouse Ergonómico Wireless",
-      slug: "mouse-ergonomico-wireless",
-      description: "Mouse ergonómico inalámbrico con DPI ajustable (800-4000), 6 botones programables, receptor nano USB y batería recargable de 60 días.",
-      price: 249,
-      originalPrice: 320,
-      costPrice: 100,
-      images: ["https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800"],
-      categoryId: cats["computadoras"].id,
-      vendorId: vendor1.id,
-      brand: "ErgoPro",
-      tags: ["mouse", "ergonómico", "wireless"],
-      stock: 90,
-      sku: "MS-ERG-WL",
-      weight: 0.12,
-      avgRating: 4.3,
-      reviewCount: 37,
-      salesCount: 98,
-      views: 1450,
-    },
-    {
-      name: "Chaqueta Invierno Térmica",
-      slug: "chaqueta-invierno-termica",
-      description: "Chaqueta térmica resistente al viento y agua, relleno de fibra sintética, capucha desmontable, múltiples bolsillos. Ideal para climas fríos.",
-      price: 899,
-      originalPrice: 1200,
-      costPrice: 450,
-      images: ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800"],
-      categoryId: cats["ropa"].id,
-      vendorId: vendor2.id,
-      brand: "ModaStyle",
-      tags: ["chaqueta", "invierno", "térmica"],
-      badge: "Temporada",
-      stock: 35,
-      sku: "CH-INV-TRM",
-      weight: 0.85,
-      avgRating: 4.7,
-      reviewCount: 29,
-      salesCount: 52,
-      views: 1670,
-    },
-    {
-      name: "Hub USB-C 8 en 1",
-      slug: "hub-usb-c-8-en-1",
-      description: "Hub USB-C con HDMI 4K, 3x USB 3.0, lector SD/TF, Ethernet Gigabit y carga PD de 100W. Compatible con MacBook, laptops y tablets.",
-      price: 349,
-      originalPrice: 450,
-      costPrice: 150,
-      images: ["https://images.unsplash.com/photo-1625842268584-8f3296236761?w=800"],
-      categoryId: cats["electronica"].id,
-      vendorId: vendor1.id,
-      brand: "ConnectPro",
-      tags: ["hub", "usb-c", "adaptador", "hdmi"],
-      stock: 55,
-      sku: "HB-UC-8N1",
-      weight: 0.08,
-      avgRating: 4.4,
-      reviewCount: 21,
-      salesCount: 73,
-      views: 920,
-    },
+    // === ABARROTES ===
+    { name: "Arroz Grano de Oro 5kg", slug: "arroz-grano-de-oro-5kg", description: "Arroz grano largo de primera calidad, cultivado en los llanos orientales de Bolivia. Ideal para el almuerzo familiar.", price: 45, originalPrice: 52, images: ["https://icnorteb2c.vteximg.com.br/arquivos/ids/156052-1000-1000/Arroz-Grano-de-Oro-Caisy-5-Kg-1-423.jpg?v=637345691790200000"], categoryId: cats["abarrotes"].id, vendorId: vendor1.id, brand: "Grano de Oro", tags: ["arroz", "abarrotes", "básico"], badge: "Más vendido", featured: true, stock: 200, sku: "ABR-ARR-5KG", weight: 5, avgRating: 4.7, reviewCount: 45, salesCount: 320 },
+    { name: "Aceite de Soya Fino 900ml", slug: "aceite-soya-fino-900ml", description: "Aceite de soya refinado, ideal para cocinar y freír. Producto boliviano de alta calidad.", price: 18, originalPrice: 22, images: ["https://mercalan.com.co/wp-content/uploads/2022/12/Diseno-sin-titulo-2-1.jpg"], categoryId: cats["abarrotes"].id, vendorId: vendor1.id, brand: "Fino", tags: ["aceite", "cocina", "abarrotes"], stock: 150, sku: "ABR-ACE-900", weight: 0.9, avgRating: 4.5, reviewCount: 32, salesCount: 210 },
+    { name: "Azúcar Bermejo 1kg", slug: "azucar-bermejo-1kg", description: "Azúcar blanca refinada de los ingenios de Bermejo, Tarija.", price: 8, originalPrice: 10, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=122142752924240791"], categoryId: cats["abarrotes"].id, vendorId: vendor1.id, brand: "Bermejo", tags: ["azúcar", "básico", "tarija"], stock: 300, sku: "ABR-AZU-1KG", weight: 1, avgRating: 4.3, reviewCount: 18, salesCount: 280 },
+    { name: "Fideos Don Vittorio Spaghetti 500g", slug: "fideos-don-vittorio-500g", description: "Fideos de sémola de trigo duro. Textura firme al dente.", price: 12, originalPrice: 14, images: ["https://elcampesino.cl/wp-content/uploads/2020/04/FIDEOS-DON-VITTORIO-400-GRS.jpg"], categoryId: cats["abarrotes"].id, vendorId: vendor1.id, brand: "Don Vittorio", tags: ["fideos", "pasta", "abarrotes"], stock: 180, sku: "ABR-FID-500", weight: 0.5, avgRating: 4.6, reviewCount: 25, salesCount: 190 },
+    { name: "Atún Real en Aceite 170g", slug: "atun-real-aceite-170g", description: "Atún en trozos en aceite vegetal. Práctico para ensaladas y sándwiches.", price: 15, originalPrice: 18, images: ["https://queondagye.com/wp-content/uploads/2022/11/LATA-DE-ATUN-EN-EDIFICIO-DE-GYE.jpg"], categoryId: cats["abarrotes"].id, vendorId: vendor1.id, brand: "Real", tags: ["atún", "enlatado", "proteína"], stock: 120, sku: "ABR-ATU-170", weight: 0.17, avgRating: 4.4, reviewCount: 20, salesCount: 145 },
+
+    // === LÁCTEOS Y HUEVOS ===
+    { name: "Leche PIL Entera 1L", slug: "leche-pil-entera-1l", description: "Leche entera pasteurizada PIL. La leche de la familia boliviana.", price: 9, originalPrice: 11, images: ["https://datos-bo.com/wp-content/uploads/2021/04/leche_pil_polvo.jpg"], categoryId: cats["lacteos-huevos"].id, vendorId: vendor1.id, brand: "PIL", tags: ["leche", "lácteo", "pil"], badge: "Popular", featured: true, trending: true, stock: 100, sku: "LAC-PIL-1L", weight: 1, avgRating: 4.8, reviewCount: 67, salesCount: 450 },
+    { name: "Yogur Delizia Frutilla 1L", slug: "yogur-delizia-frutilla-1l", description: "Yogur bebible sabor frutilla. Delicioso y nutritivo.", price: 14, originalPrice: 16, images: ["https://delizia.bo/wp-content/uploads/2021/12/24-2682-proactive-defense-200g.webp"], categoryId: cats["lacteos-huevos"].id, vendorId: vendor1.id, brand: "Delizia", tags: ["yogur", "frutilla", "lácteo"], stock: 80, sku: "LAC-YOG-FRU", weight: 1, avgRating: 4.6, reviewCount: 35, salesCount: 180 },
+    { name: "Queso Criollo Tarija 500g", slug: "queso-criollo-tarija-500g", description: "Queso criollo artesanal de Tarija. Sabor intenso, ideal para picotear con pan.", price: 35, originalPrice: 40, images: ["https://www.fotopaises.com/Fotos-Paises/t1024/2012/12/3/10252_1354457228.jpg"], categoryId: cats["lacteos-huevos"].id, vendorId: vendor1.id, brand: "Artesanal", tags: ["queso", "tarija", "artesanal"], featured: true, stock: 40, sku: "LAC-QUE-TAR", weight: 0.5, avgRating: 4.9, reviewCount: 42, salesCount: 95 },
+    { name: "Huevos de Campo x30", slug: "huevos-campo-x30", description: "Huevos frescos de gallinas de campo. 30 unidades en bandeja.", price: 42, originalPrice: 48, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100069492829744"], categoryId: cats["lacteos-huevos"].id, vendorId: vendor1.id, brand: "Del Campo", tags: ["huevos", "fresco", "campo"], stock: 50, sku: "LAC-HUE-30", weight: 1.8, avgRating: 4.7, reviewCount: 28, salesCount: 160 },
+
+    // === CARNES Y EMBUTIDOS ===
+    { name: "Pechuga de Pollo Sofía 1kg", slug: "pechuga-pollo-sofia-1kg", description: "Pechuga de pollo sin hueso Sofía. Fresca y lista para cocinar.", price: 38, originalPrice: 44, images: ["https://embutidoslafamilia.com/wp-content/uploads/2024/11/Pechuga-de-Pollo.jpg"], categoryId: cats["carnes-embutidos"].id, vendorId: vendor1.id, brand: "Sofía", tags: ["pollo", "carne", "sofía"], badge: "Fresco", featured: true, stock: 60, sku: "CAR-POL-1KG", weight: 1, avgRating: 4.6, reviewCount: 38, salesCount: 220 },
+    { name: "Lomo de Res Premium 1kg", slug: "lomo-res-premium-1kg", description: "Lomo fino de res boliviana. Corte premium para parrilla o plancha.", price: 85, originalPrice: 98, images: ["https://www.shutterstock.com/shutterstock/photos/1021135813/display_1500/stock-photo-fresh-and-raw-beef-meat-whole-piece-of-tenderloin-with-steaks-and-spices-ready-to-cook-on-dark-1021135813.jpg"], categoryId: cats["carnes-embutidos"].id, vendorId: vendor1.id, brand: "Premium", tags: ["res", "lomo", "parrilla"], trending: true, stock: 30, sku: "CAR-LOM-1KG", weight: 1, avgRating: 4.8, reviewCount: 22, salesCount: 78 },
+    { name: "Chorizo Stege Parrillero x6", slug: "chorizo-stege-parrillero-x6", description: "Chorizos parrilleros Stege. Ideales para asados bolivianos.", price: 32, originalPrice: 38, images: ["https://maduradosco.com/wp-content/uploads/2023/12/Chorizo-Parrillero-4-scaled.jpg"], categoryId: cats["carnes-embutidos"].id, vendorId: vendor1.id, brand: "Stege", tags: ["chorizo", "parrilla", "embutido"], stock: 45, sku: "CAR-CHO-6", weight: 0.6, avgRating: 4.5, reviewCount: 30, salesCount: 135 },
+
+    // === FRUTAS Y VERDURAS ===
+    { name: "Plátano de los Yungas 1kg", slug: "platano-yungas-1kg", description: "Plátanos frescos de los Yungas de La Paz. Dulces y maduros.", price: 8, originalPrice: 10, images: ["https://www.uniban.com/wp-content/uploads/2022/11/SAN-1295.jpg"], categoryId: cats["frutas-verduras"].id, vendorId: vendor1.id, brand: "Yungas", tags: ["plátano", "fruta", "yungas", "la paz"], badge: "Del día", featured: true, stock: 100, sku: "FRU-PLA-1KG", weight: 1, avgRating: 4.7, reviewCount: 55, salesCount: 380 },
+    { name: "Tomate Cherry de Cochabamba 500g", slug: "tomate-cherry-cochabamba-500g", description: "Tomates cherry frescos del Valle de Cochabamba. Perfectos para ensaladas.", price: 12, originalPrice: 15, images: ["https://frutiagro.co/wp-content/uploads/2020/03/tomates-cherry-fresco-frutiagro.jpg"], categoryId: cats["frutas-verduras"].id, vendorId: vendor1.id, brand: "Valle", tags: ["tomate", "verdura", "cochabamba"], stock: 70, sku: "FRU-TOM-500", weight: 0.5, avgRating: 4.5, reviewCount: 20, salesCount: 160 },
+    { name: "Mango de los Llanos 1kg", slug: "mango-llanos-1kg", description: "Mangos jugosos del oriente boliviano. Variedad Tommy Atkins.", price: 15, originalPrice: 20, images: ["https://cdn.pixabay.com/photo/2023/09/24/04/55/mango-8272142_1280.jpg"], categoryId: cats["frutas-verduras"].id, vendorId: vendor1.id, brand: "Llanos", tags: ["mango", "fruta", "santa cruz"], stock: 60, sku: "FRU-MAN-1KG", weight: 1, avgRating: 4.8, reviewCount: 30, salesCount: 120 },
+    { name: "Papa Huaycha 5kg", slug: "papa-huaycha-5kg", description: "Papa Huaycha de las tierras altas. La papa más popular de Bolivia.", price: 25, originalPrice: 30, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=488049256440108&amp;get_thumbnail=1"], categoryId: cats["frutas-verduras"].id, vendorId: vendor1.id, brand: "Altiplano", tags: ["papa", "tubérculo", "huaycha"], stock: 80, sku: "FRU-PAP-5KG", weight: 5, avgRating: 4.6, reviewCount: 40, salesCount: 250 },
+
+    // === PANADERÍA ===
+    { name: "Marraqueta Paceña x10", slug: "marraqueta-pacena-x10", description: "Marraquetas crujientes recién horneadas. El pan favorito de La Paz.", price: 10, originalPrice: 12, images: ["https://recetasbolivia.com/wp-content/uploads/marraqueta-boliviana.jpg"], categoryId: cats["panaderia"].id, vendorId: vendor1.id, brand: "Panadería SB", tags: ["marraqueta", "pan", "la paz"], badge: "Recién horneado", featured: true, stock: 200, sku: "PAN-MAR-10", weight: 0.6, avgRating: 4.9, reviewCount: 90, salesCount: 500 },
+    { name: "Empanadas Salteñas x6", slug: "empanadas-saltenas-x6", description: "Salteñas jugosas con relleno de carne, papa y ají. Tradición boliviana.", price: 30, originalPrice: 36, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=193949225800302&amp;get_thumbnail=1"], categoryId: cats["panaderia"].id, vendorId: vendor1.id, brand: "Panadería SB", tags: ["salteña", "empanada", "tradición"], trending: true, stock: 50, sku: "PAN-SAL-6", weight: 0.8, avgRating: 4.9, reviewCount: 75, salesCount: 340 },
+
+    // === BEBIDAS ===
+    { name: "Api Morado en Polvo 500g", slug: "api-morado-polvo-500g", description: "Mezcla para preparar Api morado, la bebida caliente tradicional boliviana a base de maíz morado.", price: 18, originalPrice: 22, images: ["http://cdn.shopify.com/s/files/1/0281/9637/2568/products/apimorado_003_1200x1200.jpg?v=1623579265"], categoryId: cats["bebidas"].id, vendorId: vendor1.id, brand: "Tradición", tags: ["api", "maíz", "tradición", "boliviana"], badge: "Tradición", featured: true, stock: 90, sku: "BEB-API-500", weight: 0.5, avgRating: 4.8, reviewCount: 60, salesCount: 280 },
+    { name: "Cerveza Paceña Six Pack", slug: "cerveza-pacena-six-pack", description: "La cerveza boliviana más popular. 6 botellas de 330ml.", price: 48, originalPrice: 55, images: ["https://2.bp.blogspot.com/-3FrhWT9asME/URQSngKAo9I/AAAAAAAACP0/w6jTuwujl20/s1600/PCÑ+-+Carnaval+2012.jpg"], categoryId: cats["bebidas"].id, vendorId: vendor1.id, brand: "Paceña", tags: ["cerveza", "paceña", "bebida"], trending: true, stock: 120, sku: "BEB-PAC-6PK", weight: 2.5, avgRating: 4.7, reviewCount: 48, salesCount: 300 },
+    { name: "Agua Mineral Viscachani 2L", slug: "agua-viscachani-2l", description: "Agua mineral natural de los manantiales de Viscachani. Sin gas.", price: 6, originalPrice: 8, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=408533878110961"], categoryId: cats["bebidas"].id, vendorId: vendor1.id, brand: "Viscachani", tags: ["agua", "mineral", "natural"], stock: 200, sku: "BEB-AGU-2L", weight: 2, avgRating: 4.4, reviewCount: 15, salesCount: 400 },
+
+    // === LIMPIEZA Y HOGAR ===
+    { name: "Detergente Omo Matic 3kg", slug: "detergente-omo-matic-3kg", description: "Detergente en polvo para lavadora automática. Limpieza profunda.", price: 55, originalPrice: 65, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=460873896247996"], categoryId: cats["limpieza-hogar"].id, vendorId: vendor1.id, brand: "Omo", tags: ["detergente", "limpieza", "lavandería"], stock: 80, sku: "LIM-OMO-3KG", weight: 3, avgRating: 4.5, reviewCount: 22, salesCount: 130 },
+    { name: "Lavandina Clorox 1L", slug: "lavandina-clorox-1l", description: "Desinfectante multiusos. Elimina 99.9% de gérmenes.", price: 12, originalPrice: 15, images: ["https://alexandertelleria.com/wp-content/uploads/2020/06/clorox1.jpeg"], categoryId: cats["limpieza-hogar"].id, vendorId: vendor1.id, brand: "Clorox", tags: ["lavandina", "desinfectante", "limpieza"], stock: 100, sku: "LIM-CLO-1L", weight: 1, avgRating: 4.4, reviewCount: 18, salesCount: 110 },
+
+    // === CUIDADO PERSONAL ===
+    { name: "Shampoo Head & Shoulders 375ml", slug: "shampoo-hs-375ml", description: "Shampoo anticaspa. Limpieza profunda y frescura duradera.", price: 38, originalPrice: 45, images: ["https://jumboargentina.vtexassets.com/arquivos/ids/779574/Shampoo-Head-shoulders-Manzana-700ml-1-941857.jpg?v=638188114460500000"], categoryId: cats["cuidado-personal"].id, vendorId: vendor1.id, brand: "Head & Shoulders", tags: ["shampoo", "cabello", "personal"], stock: 70, sku: "CUI-HS-375", weight: 0.4, avgRating: 4.5, reviewCount: 25, salesCount: 90 },
+    { name: "Crema Nivea Lata 250ml", slug: "crema-nivea-250ml", description: "Crema hidratante multiusos. Protección para la piel seca del altiplano.", price: 42, originalPrice: 50, images: ["https://www.imanweb.cl/wp-content/uploads/2025/09/imgi_121_cremas-29.jpeg"], categoryId: cats["cuidado-personal"].id, vendorId: vendor1.id, brand: "Nivea", tags: ["crema", "hidratante", "piel"], stock: 60, sku: "CUI-NIV-250", weight: 0.3, avgRating: 4.7, reviewCount: 35, salesCount: 120 },
+
+    // === MODA BOLIVIANA — 9 DEPARTAMENTOS ===
+    { name: "Aguayo Moderno La Paz", slug: "aguayo-moderno-la-paz", description: "Aguayo tejido a mano con diseños contemporáneos inspirados en los textiles paceños. Colores azul y blanco representando el cielo del Illimani.", price: 180, originalPrice: 220, images: ["https://indela.fund/wp-content/uploads/2020/09/logo_aguayo-1.png"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["aguayo", "la paz", "textil", "artesanal"], badge: "🏔️ La Paz", featured: true, trending: true, stock: 25, sku: "MOD-LP-001", weight: 0.3, avgRating: 4.9, reviewCount: 45, salesCount: 89 },
+    { name: "Chaleco Tejido Cochabamba", slug: "chaleco-tejido-cochabamba", description: "Chaleco de alpaca con bordados florales del Valle de Cochabamba. Colores cálidos tierra y naranja.", price: 250, originalPrice: 300, images: ["https://filum.com.ar/wp-content/uploads/2025/04/IMG_4224-scaled.jpeg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["chaleco", "cochabamba", "alpaca", "tejido"], badge: "🌽 Cochabamba", featured: true, stock: 20, sku: "MOD-CB-001", weight: 0.4, avgRating: 4.8, reviewCount: 32, salesCount: 56 },
+    { name: "Camisa Tropical Santa Cruz", slug: "camisa-tropical-santa-cruz", description: "Camisa ligera con estampado de flora y fauna del oriente boliviano. Diseño moderno con motivos de la Chiquitanía.", price: 150, originalPrice: 180, images: ["https://cautiva.com.ar/wp-content/uploads/2025/03/CAMBOLIVIA21-1024x1536.jpg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["camisa", "santa cruz", "tropical", "oriente"], badge: "🌴 Santa Cruz", featured: true, stock: 30, sku: "MOD-SC-001", weight: 0.2, avgRating: 4.7, reviewCount: 28, salesCount: 72 },
+    { name: "Poncho Diablada Oruro", slug: "poncho-diablada-oruro", description: "Poncho inspirado en los colores vibrantes del Carnaval de Oruro. Diseño con motivos de la Diablada en tonos rojo, púrpura y dorado.", price: 320, originalPrice: 380, images: ["https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Diablada_de_Oruro_Bolivia.jpg/960px-Diablada_de_Oruro_Bolivia.jpg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["poncho", "oruro", "diablada", "carnaval"], badge: "🎭 Oruro", featured: true, stock: 15, sku: "MOD-OR-001", weight: 0.5, avgRating: 4.9, reviewCount: 50, salesCount: 45 },
+    { name: "Bolso Minero Potosí", slug: "bolso-minero-potosi", description: "Bolso de cuero artesanal con acabados metálicos inspirados en la tradición minera del Cerro Rico de Potosí.", price: 200, originalPrice: 250, images: ["https://glamstorebolivia.com/wp-content/uploads/2023/09/Captura-de-Pantalla-2023-09-08-a-las-09.09.22.png"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["bolso", "potosí", "cuero", "minero"], badge: "⛏️ Potosí", stock: 18, sku: "MOD-PO-001", weight: 0.6, avgRating: 4.7, reviewCount: 22, salesCount: 38 },
+    { name: "Vestido Vendimia Tarija", slug: "vestido-vendimia-tarija", description: "Vestido floral inspirado en la Fiesta de la Vendimia de Tarija. Tela ligera con estampados de viñedos en tonos rosa y púrpura.", price: 280, originalPrice: 340, images: ["https://www.viajarbolivia.com.bo/wp-content/uploads/2023/07/356940258_744893007645889_6901515579081614478_n-1.jpg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["vestido", "tarija", "vendimia", "floral"], badge: "🍇 Tarija", featured: true, stock: 12, sku: "MOD-TJ-001", weight: 0.3, avgRating: 4.8, reviewCount: 35, salesCount: 42 },
+    { name: "Sombrero Colonial Chuquisaca", slug: "sombrero-colonial-chuquisaca", description: "Sombrero artesanal inspirado en la arquitectura colonial de Sucre. Diseño elegante en tonos marfil y dorado.", price: 160, originalPrice: 190, images: ["https://thumbs.dreamstime.com/b/entrada-la-fábrica-nacional-de-cemento-sucre-bolivia-setiembre-es-donde-las-obras-extensión-están-en-marcha-disparo-el-161367531.jpg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["sombrero", "chuquisaca", "sucre", "colonial"], badge: "🏛️ Chuquisaca", stock: 22, sku: "MOD-CH-001", weight: 0.2, avgRating: 4.6, reviewCount: 18, salesCount: 30 },
+    { name: "Hamaca Artesanal Beni", slug: "hamaca-artesanal-beni", description: "Hamaca tejida a mano por artesanas del Beni. Colores turquesa y verde que evocan los ríos y la selva amazónica.", price: 350, originalPrice: 420, images: ["https://1.bp.blogspot.com/-0uGbtUJspTk/YFH8qJScP-I/AAAAAAAAAIY/Im5A8_eg3S4QS4sHeg-qw-MK-ZifsjFagCLcBGAsYHQ/w1200-h630-p-k-no-nu/MAPA.jpg"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["hamaca", "beni", "artesanal", "amazónico"], badge: "🐊 Beni", stock: 10, sku: "MOD-BN-001", weight: 1.2, avgRating: 4.9, reviewCount: 15, salesCount: 22 },
+    { name: "Mochila Amazónica Pando", slug: "mochila-amazonica-pando", description: "Mochila ecológica con materiales sostenibles de la Amazonía. Diseño verde con motivos de la selva pandina.", price: 220, originalPrice: 260, images: ["https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=61551674781793"], categoryId: cats["moda-boliviana"].id, vendorId: vendor2.id, brand: "Moda 9D", tags: ["mochila", "pando", "amazónica", "ecológica"], badge: "🌿 Pando", stock: 16, sku: "MOD-PA-001", weight: 0.4, avgRating: 4.7, reviewCount: 12, salesCount: 28 },
+
+    // === ELECTRÓNICA ===
+    { name: "Licuadora Oster 3 Velocidades", slug: "licuadora-oster-3vel", description: "Licuadora Oster clásica con vaso de vidrio y 3 velocidades. Ideal para jugos y licuados.", price: 280, originalPrice: 350, images: ["https://www.tecnoshoppingbolivia.com/wp-content/uploads/2025/03/S2-16.jpg"], categoryId: cats["electronica"].id, vendorId: vendor1.id, brand: "Oster", tags: ["licuadora", "cocina", "electrodoméstico"], stock: 35, sku: "ELE-OST-LIC", weight: 3.5, avgRating: 4.5, reviewCount: 20, salesCount: 65 },
+    { name: "Celular Xiaomi Redmi Note 13", slug: "xiaomi-redmi-note-13", description: "Smartphone Xiaomi Redmi Note 13 128GB. Pantalla AMOLED 6.67\", cámara 108MP, batería 5000mAh. Compatible con Entel, Tigo y Viva.", price: 1450, originalPrice: 1700, images: ["https://exitocol.vtexassets.com/arquivos/ids/22911233/celular-xiaomi-redmi-note-13-pro-256gb-8ram-200mp-verde.jpg?v=638520985050800000"], categoryId: cats["electronica"].id, vendorId: vendor1.id, brand: "Xiaomi", tags: ["celular", "xiaomi", "smartphone", "5g"], badge: "Tecnología", featured: true, trending: true, stock: 25, sku: "ELE-XIA-RN13", weight: 0.2, avgRating: 4.7, reviewCount: 55, salesCount: 120 },
   ];
 
   for (const p of productData) {
+    const catSlug = Object.keys(cats).find(k => cats[k].id === p.categoryId);
+    const catName = catData.find(c => c.slug === catSlug)?.name || "";
     const product = await prisma.product.upsert({
       where: { slug: p.slug },
       update: {},
-      create: p,
+      create: {
+        name: p.name, slug: p.slug, description: p.description,
+        price: p.price, originalPrice: p.originalPrice || null, comparePrice: p.originalPrice || null, costPrice: Math.floor(p.price * 0.6),
+        images: p.images, categoryId: p.categoryId, categoryName: catName, vendorId: p.vendorId,
+        brand: p.brand || null, tags: p.tags || [], badge: p.badge || null,
+        featured: p.featured || false, trending: p.trending || false,
+        stock: p.stock, lowStockThreshold: 10, sku: p.sku, weight: p.weight || null,
+        avgRating: p.avgRating || 0, reviewCount: p.reviewCount || 0, salesCount: p.salesCount || 0, active: true,
+      },
     });
     products.push(product);
   }
-
-  // ─── VARIANTS ──────────────────────
-  await prisma.productVariant.deleteMany({});
-  const shirt = products.find((p) => p.slug === "camiseta-premium-algodon");
-  if (shirt) {
-    const variants = [
-      { productId: shirt.id, name: "Talla", value: "S", sku: "CM-PA-S", stock: 50, price: 149 },
-      { productId: shirt.id, name: "Talla", value: "M", sku: "CM-PA-M", stock: 60, price: 149 },
-      { productId: shirt.id, name: "Talla", value: "L", sku: "CM-PA-L", stock: 50, price: 149 },
-      { productId: shirt.id, name: "Talla", value: "XL", sku: "CM-PA-XL", stock: 40, price: 159 },
-      { productId: shirt.id, name: "Color", value: "Negro", sku: "CM-PA-BLK", stock: 80 },
-      { productId: shirt.id, name: "Color", value: "Blanco", sku: "CM-PA-WHT", stock: 70 },
-      { productId: shirt.id, name: "Color", value: "Azul", sku: "CM-PA-BLU", stock: 50 },
-    ];
-    for (const v of variants) {
-      await prisma.productVariant.create({ data: v });
-    }
-  }
-
-  const shoes = products.find((p) => p.slug === "zapatillas-running-pro");
-  if (shoes) {
-    const sizes = ["38", "39", "40", "41", "42", "43", "44"];
-    for (const s of sizes) {
-      await prisma.productVariant.create({ data: { productId: shoes.id, name: "Talla", value: s, stock: 8 } });
-    }
-  }
+  console.log(`  ✅ ${products.length} productos creados`);
 
   // ─── BANNERS ───────────────────────
   await prisma.banner.deleteMany({});
   await prisma.banner.createMany({
     data: [
-      { title: "¡Mega Ofertas de Temporada!", subtitle: "Hasta 50% de descuento en electrónica", image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=400&fit=crop", link: "/?category=electronica", position: "hero", active: true, order: 1 },
-      { title: "Nueva Colección de Moda", subtitle: "Descubre las últimas tendencias", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&h=400&fit=crop", link: "/?category=ropa", position: "hero", active: true, order: 2 },
-      { title: "Gaming Week", subtitle: "Todo para gamers con precios increíbles", image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=300&fit=crop", link: "/?category=gaming", position: "sidebar", active: true, order: 1 },
+      { title: "SurtiBolivia — Tu Supermercado en Línea", subtitle: "Productos frescos y moda boliviana con envío a todo el país", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&h=500&fit=crop", link: "/", position: "hero", order: 0 },
+      { title: "🇧🇴 Moda de los 9 Departamentos", subtitle: "Descubre nuestra colección exclusiva inspirada en toda Bolivia", image: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=1400&h=500&fit=crop", link: "/?category=moda-boliviana", position: "hero", order: 1 },
+      { title: "Frutas y Verduras Frescas", subtitle: "Directas de los valles y yungas a tu mesa", image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1400&h=500&fit=crop", link: "/?category=frutas-verduras", position: "hero", order: 2 },
     ],
   });
 
   // ─── COLLECTIONS ───────────────────
-  const bestSellers = await prisma.collection.upsert({
-    where: { slug: "mas-vendidos" },
-    update: {},
-    create: {
-      name: "Los Más Vendidos",
-      slug: "mas-vendidos",
-      description: "Nuestros productos más populares",
-    },
+  await prisma.collectionProduct.deleteMany({});
+  await prisma.collection.deleteMany({});
+  const modaCol = await prisma.collection.create({
+    data: { name: "Moda Boliviana — 9 Departamentos", slug: "moda-9-departamentos", description: "Prendas y accesorios únicos inspirados en cada departamento de Bolivia" },
   });
-  const topProducts = products.filter((p) => p.salesCount > 80);
+  const modaProducts = products.filter(p => ["aguayo-moderno-la-paz", "chaleco-tejido-cochabamba", "camisa-tropical-santa-cruz", "poncho-diablada-oruro", "bolso-minero-potosi", "vestido-vendimia-tarija", "sombrero-colonial-chuquisaca", "hamaca-artesanal-beni", "mochila-amazonica-pando"].includes(p.slug));
+  for (let i = 0; i < modaProducts.length; i++) {
+    await prisma.collectionProduct.upsert({
+      where: { collectionId_productId: { collectionId: modaCol.id, productId: modaProducts[i].id } },
+      update: {},
+      create: { collectionId: modaCol.id, productId: modaProducts[i].id, order: i },
+    });
+  }
+  const bestSellers = await prisma.collection.create({
+    data: { name: "Los Más Vendidos", slug: "mas-vendidos", description: "Los productos favoritos de la familia boliviana" },
+  });
+  const topProducts = [...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 8);
   for (let i = 0; i < topProducts.length; i++) {
     await prisma.collectionProduct.upsert({
       where: { collectionId_productId: { collectionId: bestSellers.id, productId: topProducts[i].id } },
@@ -485,85 +214,61 @@ async function main() {
   await prisma.coupon.deleteMany({});
   await prisma.coupon.createMany({
     data: [
-      { code: "BIENVENIDO20", type: "percentage", discount: 20, maxDiscount: 200, minAmount: 500, maxUses: 1000, usedCount: 156, expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), active: true },
-      { code: "ENVIOGRATIS", type: "fixed", discount: 50, minAmount: 200, maxUses: 500, usedCount: 89, expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), active: true },
-      { code: "TECH30", type: "percentage", discount: 30, maxDiscount: 500, minAmount: 1000, maxUses: 200, usedCount: 34, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), active: true },
-      { code: "FLASH50", type: "percentage", discount: 50, maxDiscount: 300, minAmount: 600, maxUses: 50, usedCount: 12, perUser: 1, expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), active: true },
+      { code: "BIENVENIDO20", type: "percentage", discount: 20, maxDiscount: 100, minAmount: 100, maxUses: 1000, usedCount: 234, expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), active: true },
+      { code: "SURTI10", type: "percentage", discount: 10, maxDiscount: 50, minAmount: 50, maxUses: 500, usedCount: 167, expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), active: true },
+      { code: "ENVIOGRATIS", type: "fixed", discount: 25, minAmount: 200, maxUses: 500, usedCount: 78, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), active: true },
+      { code: "MODA30", type: "percentage", discount: 30, maxDiscount: 200, minAmount: 300, maxUses: 100, usedCount: 23, perUser: 1, expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), active: true },
     ],
   });
 
   // ─── FLASH DEALS ───────────────────
   await prisma.flashDeal.deleteMany({});
-  const flashProducts = products.slice(0, 4);
-  for (const fp of flashProducts) {
+  const flashSlugs = ["leche-pil-entera-1l", "aguayo-moderno-la-paz", "cerveza-pacena-six-pack", "pechuga-pollo-sofia-1kg"];
+  const flashItems = products.filter(p => flashSlugs.includes(p.slug));
+  for (const fp of flashItems) {
     await prisma.flashDeal.create({
-      data: {
-        title: `Flash: ${fp.name}`,
-        productId: fp.id,
-        discount: Math.floor(Math.random() * 30) + 20,
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 48 * 60 * 60 * 1000),
-      },
+      data: { title: `⚡ ${fp.name}`, productId: fp.id, discount: Math.floor(Math.random() * 15) + 10, startDate: new Date(), endDate: new Date(Date.now() + 72 * 60 * 60 * 1000) },
     });
   }
 
   // ─── REVIEWS ───────────────────────
   await prisma.review.deleteMany({});
-  const reviewTexts = [
-    { title: "Excelente producto", comment: "Superó mis expectativas, la calidad es increíble y llegó rápido.", rating: 5 },
-    { title: "Muy bueno", comment: "Buen producto, cumple con lo prometido. Lo recomiendo.", rating: 4 },
-    { title: "Buena compra", comment: "Relación calidad-precio muy buena. El envío fue rápido.", rating: 4 },
-    { title: "Increíble calidad", comment: "No esperaba tanta calidad por este precio. Definitivamente compraré de nuevo.", rating: 5 },
-    { title: "Cumple su función", comment: "Es un producto decente, nada extraordinario pero cumple.", rating: 3 },
+  const realReviews = [
+    { title: "Excelente calidad", comment: "Producto fresco y bien empaquetado. Llegó a mi casa en La Paz en perfecto estado.", rating: 5 },
+    { title: "Muy bueno", comment: "La calidad es excelente para el precio. En el supermercado cuesta más.", rating: 5 },
+    { title: "Buena relación calidad-precio", comment: "Para ser delivery está muy bien. Mejor precio que en los supermercados.", rating: 4 },
+    { title: "Me encantó", comment: "Primera vez que compro online y la experiencia fue genial. Todo llegó completo.", rating: 5 },
+    { title: "Recomendado", comment: "Compro cada semana por SurtiBolivia. Es más cómodo que ir al mercado.", rating: 4 },
+    { title: "Buen producto", comment: "Cumple con lo descrito. El envío a Cochabamba fue rápido.", rating: 4 },
   ];
   const reviewUsers = [customer, customer2];
-  for (const product of products.slice(0, 8)) {
-    for (let i = 0; i < Math.min(reviewUsers.length, 2); i++) {
-      const r = reviewTexts[Math.floor(Math.random() * reviewTexts.length)];
-      await prisma.review.create({
-        data: {
-          productId: product.id,
-          userId: reviewUsers[i].id,
-          rating: r.rating,
-          title: r.title,
-          comment: r.comment,
-          verified: Math.random() > 0.3,
-        },
-      });
+  for (const product of products.slice(0, 16)) {
+    for (let i = 0; i < reviewUsers.length; i++) {
+      const r = realReviews[Math.floor(Math.random() * realReviews.length)];
+      await prisma.review.create({ data: { productId: product.id, userId: reviewUsers[i].id, rating: r.rating, title: r.title, comment: r.comment, verified: Math.random() > 0.2 } });
     }
   }
 
   // ─── ORDERS ────────────────────────
   await prisma.orderItem.deleteMany({});
   await prisma.order.deleteMany({});
-  const orderStatuses = ["pending", "confirmed", "processing", "shipped", "delivered"];
-  const paymentStatuses = ["pending", "paid", "paid", "paid", "paid"];
-  for (let i = 0; i < 12; i++) {
+  const orderStatuses = ["pending", "confirmed", "processing", "shipped", "delivered", "delivered"];
+  const paymentStatuses = ["pending", "paid", "paid", "paid", "paid", "paid"];
+  for (let i = 0; i < 15; i++) {
     const user = [customer, customer2][i % 2];
     const statusIdx = Math.floor(Math.random() * orderStatuses.length);
-    const randomProducts = products.sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 3) + 1);
-    const items = randomProducts.map((p) => ({
-      productId: p.id,
-      quantity: Math.floor(Math.random() * 3) + 1,
-      price: p.price,
-    }));
+    const randomProducts = [...products].sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * 4) + 1);
+    const items = randomProducts.map((p) => ({ productId: p.id, quantity: Math.floor(Math.random() * 3) + 1, price: p.price }));
     const subtotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
     const shippingCost = subtotal > 200 ? 0 : 25;
     await prisma.order.create({
       data: {
-        userId: user.id,
-        customerEmail: user.email,
-        customerName: user.name,
-        orderNumber: `NT-${String(2024000 + i).padStart(7, "0")}`,
-        status: orderStatuses[statusIdx],
-        paymentStatus: paymentStatuses[statusIdx],
-        subtotal,
-        shippingCost,
-        discountAmount: 0,
-        tax: 0,
-        total: subtotal + shippingCost,
+        userId: user.id, customerEmail: user.email, customerName: user.name,
+        orderNumber: `SB-${String(2025000 + i).padStart(7, "0")}`,
+        status: orderStatuses[statusIdx], paymentStatus: paymentStatuses[statusIdx],
+        subtotal, shippingCost, discountAmount: 0, tax: 0, total: subtotal + shippingCost,
         items: { create: items },
-        createdAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - Math.floor(Math.random() * 45) * 24 * 60 * 60 * 1000),
       },
     });
   }
@@ -572,9 +277,9 @@ async function main() {
   await prisma.address.deleteMany({});
   await prisma.address.createMany({
     data: [
-      { userId: customer.id, name: "Pedro López", phone: "+591 71234567", street: "Av. Arce #1234", city: "La Paz", state: "La Paz", zipCode: "0000", country: "Bolivia", isDefault: true },
-      { userId: customer.id, name: "Pedro López", phone: "+591 71234567", street: "Calle Sucre #567, Edificio Central, Piso 3", city: "Cochabamba", state: "Cochabamba", country: "Bolivia" },
-      { userId: customer2.id, name: "Ana Torres", phone: "+591 76543210", street: "Av. Banzer #890", city: "Santa Cruz", state: "Santa Cruz", zipCode: "0000", country: "Bolivia", isDefault: true },
+      { userId: customer.id, name: "Pedro López", phone: "+591 71234567", street: "Av. Arce #2135, Edificio Multicentro, Piso 4", city: "La Paz", state: "La Paz", zipCode: "0000", country: "Bolivia", isDefault: true },
+      { userId: customer.id, name: "Pedro López", phone: "+591 71234567", street: "Av. América #567, Zona Queru Queru", city: "Cochabamba", state: "Cochabamba", country: "Bolivia" },
+      { userId: customer2.id, name: "Ana Torres", phone: "+591 76543210", street: "Av. Monseñor Rivero #300, 3er Anillo", city: "Santa Cruz de la Sierra", state: "Santa Cruz", zipCode: "0000", country: "Bolivia", isDefault: true },
     ],
   });
 
@@ -582,48 +287,58 @@ async function main() {
   await prisma.notification.deleteMany({});
   await prisma.notification.createMany({
     data: [
-      { userId: customer.id, type: "order", title: "Pedido enviado", message: "Tu pedido NT-2024000 ha sido enviado. Tracking: BOL123456", read: false },
-      { userId: customer.id, type: "promo", title: "¡Flash Sale!", message: "50% de descuento en auriculares por las próximas 24 horas", read: false },
-      { userId: customer.id, type: "system", title: "Bienvenido a NovaTech", message: "¡Gracias por registrarte! Usa el código BIENVENIDO20 en tu primera compra.", read: true },
-      { userId: vendor1User.id, type: "order", title: "Nueva venta", message: "Has recibido un nuevo pedido por Bs. 6,999", read: false },
+      { userId: customer.id, type: "order", title: "Pedido enviado", message: "Tu pedido SB-2025003 ha sido enviado. Recibirás tus productos frescos hoy.", read: false },
+      { userId: customer.id, type: "promo", title: "🇧🇴 Nueva colección Moda Boliviana!", message: "Descubre las prendas inspiradas en los 9 departamentos. Usa MODA30 para 30% OFF.", read: false },
+      { userId: customer.id, type: "system", title: "Bienvenido a SurtiBolivia", message: "¡Gracias por registrarte! Usa BIENVENIDO20 para un 20% en tu primera compra.", read: true },
+      { userId: vendor1User.id, type: "order", title: "Nueva venta", message: "Has vendido 3x Arroz Grano de Oro 5kg y 2x Leche PIL. ¡Prepara el envío!", read: false },
     ],
   });
 
   // ─── QUESTIONS ─────────────────────
   await prisma.productAnswer.deleteMany({});
   await prisma.productQuestion.deleteMany({});
-  const laptop = products.find((p) => p.slug === "laptop-ultrabook-pro-15");
-  if (laptop) {
-    const q = await prisma.productQuestion.create({
-      data: { productId: laptop.id, userId: customer.id, question: "¿Tiene garantía internacional o solo en Bolivia?" },
-    });
-    await prisma.productAnswer.create({
-      data: { questionId: q.id, userId: vendor1User.id, answer: "La garantía es de 1 año válida en todo Latinoamérica. Contáctanos para más detalles." },
-    });
+  const aguayo = products.find((p) => p.slug === "aguayo-moderno-la-paz");
+  if (aguayo) {
+    const q1 = await prisma.productQuestion.create({ data: { productId: aguayo.id, userId: customer.id, question: "¿Es tejido a mano o industrial?" } });
+    await prisma.productAnswer.create({ data: { questionId: q1.id, userId: vendor2User.id, answer: "Es 100% tejido a mano por artesanas de El Alto. Cada pieza es única." } });
+    const q2 = await prisma.productQuestion.create({ data: { productId: aguayo.id, userId: customer2.id, question: "¿Se puede lavar en lavadora?" } });
+    await prisma.productAnswer.create({ data: { questionId: q2.id, userId: vendor2User.id, answer: "Recomendamos lavado a mano con agua fría para preservar los colores." } });
   }
 
   // ─── SETTINGS ──────────────────────
   const settings = [
-    { key: "store_name", value: "NovaTech Marketplace", category: "general" },
-    { key: "store_email", value: "contacto@novatech.bo", category: "general" },
-    { key: "store_phone", value: "+591 2 1234567", category: "general" },
+    { key: "store_name", value: "SurtiBolivia", category: "general" },
+    { key: "store_email", value: "hola@surtibolivia.bo", category: "general" },
+    { key: "store_phone", value: "+591 2 2444567", category: "general" },
     { key: "store_address", value: "Av. 16 de Julio #1500, La Paz, Bolivia", category: "general" },
+    { key: "store_currency", value: "BOB", category: "general" },
+    { key: "store_locale", value: "es-BO", category: "general" },
     { key: "free_shipping_min", value: "200", category: "shipping" },
-    { key: "default_commission", value: "10", category: "vendors" },
-    { key: "loyalty_points_rate", value: "10", category: "loyalty" },
-    { key: "referral_reward", value: "50", category: "loyalty" },
+    { key: "default_shipping_cost", value: "25", category: "shipping" },
+    { key: "vendor_commission", value: "10", category: "vendors" },
+    { key: "loyalty_points_rate", value: "1", category: "loyalty" },
+    { key: "referral_reward", value: "20", category: "loyalty" },
   ];
   for (const s of settings) {
-    await prisma.setting.upsert({ where: { key: s.key }, update: {}, create: s });
+    await prisma.setting.upsert({ where: { key: s.key }, update: { value: s.value }, create: s });
   }
 
-  console.log("✅ Seed completed!");
-  console.log(`   ${products.length} products, ${Object.keys(cats).length} categories`);
-  console.log("   Credentials: admin@novatech.bo / Password123!");
-  console.log("   Vendor: vendedor@novatech.bo / Password123!");
-  console.log("   Customer: cliente@novatech.bo / Password123!");
+  // ─── ACTIVITY LOG ──────────────────
+  await prisma.activityLog.deleteMany({});
+  await prisma.activityLog.createMany({
+    data: [
+      { userId: admin.id, action: "seed", entity: "system", entityId: "init", details: "Base de datos inicializada con datos de SurtiBolivia" },
+      { userId: vendor1User.id, action: "product_create", entity: "product", entityId: products[0]?.id || "0", details: "Producto de abarrotes creado" },
+      { userId: vendor2User.id, action: "product_create", entity: "product", entityId: products[products.length - 1]?.id || "0", details: "Producto de moda boliviana creado" },
+    ],
+  });
+
+  console.log("✅ SurtiBolivia seeded successfully!");
+  console.log(`  👤 Users: 5 | 🏪 Vendors: 2 | 📦 Categories: ${catData.length} | 🛍️ Products: ${products.length}`);
+  console.log(`  🇧🇴 Moda Boliviana: 9 (one per department)`);
+  console.log(`  🔐 Login: admin@surtibolivia.bo / Password123!`);
 }
 
 main()
   .catch((e) => { console.error(e); process.exit(1); })
-  .finally(async () => { await prisma.$disconnect(); });
+  .finally(() => prisma.$disconnect());

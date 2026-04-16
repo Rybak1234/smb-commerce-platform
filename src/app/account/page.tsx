@@ -1,26 +1,33 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, Package, Heart, MapPin, Bell, Star, Settings, Gift, TrendingUp, ArrowRight, ShoppingBag, CreditCard, Clock } from "lucide-react";
+import { User, Package, Heart, MapPin, Bell, Star, Settings, Gift, TrendingUp, ArrowRight, ShoppingBag, CreditCard, Clock, Camera } from "lucide-react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatPrice, formatDate, getInitials } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 export default function AccountPage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [orders, setOrders] = useState<any[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [stats, setStats] = useState({ totalOrders: 0, totalSpent: 0, loyaltyPoints: 0, wishlistCount: 0 });
 
   useEffect(() => { if (status === "unauthenticated") router.push("/login"); }, [status, router]);
 
   useEffect(() => {
     if (!session) return;
+    const user = session.user as any;
+    if (user?.avatar) setAvatarUrl(user.avatar);
     fetch("/api/orders?limit=5").then((r) => r.json()).then((d) => {
       const list = d.orders || d || [];
       setOrders(Array.isArray(list) ? list.slice(0, 5) : []);
@@ -29,6 +36,29 @@ export default function AccountPage() {
     }).catch(() => {});
     fetch("/api/wishlist").then((r) => r.json()).then((d) => setStats((p) => ({ ...p, wishlistCount: Array.isArray(d) ? d.length : 0 }))).catch(() => {});
   }, [session]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      const res = await fetch("/api/account/avatar", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setAvatarUrl(data.avatar);
+        await update();
+        toast.success("Avatar actualizado");
+      } else {
+        toast.error(data.error || "Error al subir avatar");
+      }
+    } catch {
+      toast.error("Error al subir avatar");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (status === "loading") return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
   if (!session) return null;
@@ -40,16 +70,28 @@ export default function AccountPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
-        <Avatar className="h-16 w-16">
-          <AvatarFallback className="text-xl bg-primary text-primary-foreground">{getInitials(user.name || user.email)}</AvatarFallback>
-        </Avatar>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+        <div className="relative group">
+          <Avatar className="h-20 w-20 ring-4 ring-primary/20">
+            <AvatarImage src={avatarUrl || user.avatar} />
+            <AvatarFallback className="text-2xl bg-primary text-primary-foreground">{getInitials(user.name || user.email)}</AvatarFallback>
+          </Avatar>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <Camera className="h-6 w-6 text-white" />
+          </button>
+          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleAvatarUpload} className="hidden" />
+          {uploading && <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50"><div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" /></div>}
+        </div>
         <div className="flex-1">
           <h1 className="text-2xl font-bold">{user.name || "Usuario"}</h1>
           <p className="text-muted-foreground">{user.email}</p>
           {user.role && <Badge variant="outline" className="mt-1 capitalize">{user.role}</Badge>}
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

@@ -11,11 +11,11 @@ export function StoreFooter() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">N</span>
+                <Store className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl">NovaTech</span>
+              <span className="font-bold text-xl">SurtiBolivia</span>
             </div>
-            <p className="text-sm text-muted-foreground">Marketplace de tecnología y accesorios. Los mejores productos de múltiples vendedores verificados en Bolivia.</p>
+            <p className="text-sm text-muted-foreground">El supermercado en línea de la familia boliviana. Abarrotes, frutas, lácteos, moda boliviana y mucho más con envío a todo el país.</p>
             <div className="flex gap-3">
               <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Globe className="h-4 w-4" /></a>
               <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Camera className="h-4 w-4" /></a>
@@ -26,13 +26,13 @@ export function StoreFooter() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Tienda</h4>
+            <h4 className="font-semibold">Secciones</h4>
             <div className="space-y-2 text-sm">
               <Link href="/" className="block text-muted-foreground hover:text-primary transition-colors">Todos los Productos</Link>
-              <Link href="/?featured=true" className="block text-muted-foreground hover:text-primary transition-colors">Destacados</Link>
+              <Link href="/?category=moda-boliviana" className="block text-muted-foreground hover:text-primary transition-colors">Moda Boliviana</Link>
+              <Link href="/?category=abarrotes" className="block text-muted-foreground hover:text-primary transition-colors">Abarrotes</Link>
+              <Link href="/?featured=true" className="block text-muted-foreground hover:text-primary transition-colors">Ofertas Destacadas</Link>
               <Link href="/vendors" className="block text-muted-foreground hover:text-primary transition-colors">Tiendas</Link>
-              <Link href="/flash-deals" className="block text-muted-foreground hover:text-primary transition-colors">Ofertas Flash</Link>
-              <Link href="/gift-cards" className="block text-muted-foreground hover:text-primary transition-colors">Tarjetas de Regalo</Link>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ export function StoreFooter() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-4 w-4 shrink-0" /><span>La Paz, Bolivia</span></div>
               <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4 shrink-0" /><span>+591 2 123 4567</span></div>
-              <div className="flex items-center gap-2 text-muted-foreground"><Mail className="h-4 w-4 shrink-0" /><span>soporte@novatech.bo</span></div>
+              <div className="flex items-center gap-2 text-muted-foreground"><Mail className="h-4 w-4 shrink-0" /><span>hola@surtibolivia.bo</span></div>
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@ export function StoreFooter() {
         <Separator className="my-8" />
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} NovaTech Marketplace. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} SurtiBolivia. Hecho en Bolivia.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-primary transition-colors">Términos</Link>
             <Link href="#" className="hover:text-primary transition-colors">Privacidad</Link>

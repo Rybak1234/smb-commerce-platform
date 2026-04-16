@@ -40,27 +40,22 @@ export function StoreHeader({ categories }: { categories?: any[] }) {
 
   return (
     <>
-      {/* Promo Banner */}
-      <div className="bg-primary text-primary-foreground text-center py-2 text-sm font-medium">
-        🎉 Marketplace NovaTech — Envío gratis en compras mayores a Bs. 200 · Código: <span className="font-bold">NOVA10</span>
-      </div>
-
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">N</span>
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow">
+                <Store className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl hidden sm:block">NovaTech</span>
+              <span className="font-bold text-xl hidden sm:block tracking-tight">SurtiBolivia</span>
             </Link>
 
             {/* Search Bar */}
-            <button onClick={() => setSearchOpen(true)} className="hidden md:flex items-center gap-2 h-10 w-full max-w-sm mx-4 px-4 rounded-lg border bg-muted/50 text-sm text-muted-foreground hover:bg-muted transition-colors">
-              <Search className="h-4 w-4" />
-              <span className="flex-1 text-left">Buscar productos...</span>
-              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100">⌘K</kbd>
+            <button onClick={() => setSearchOpen(true)} className="hidden md:flex items-center gap-3 h-10 w-full max-w-md mx-6 px-4 rounded-xl border bg-muted/40 text-sm text-muted-foreground hover:bg-muted/70 hover:border-primary/30 transition-all duration-200 group">
+              <Search className="h-4 w-4 text-muted-foreground/60 group-hover:text-primary transition-colors" />
+              <span className="flex-1 text-left">Buscar productos, marcas, categorias...</span>
+              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded-md border bg-background px-1.5 font-mono text-[10px] font-medium">Ctrl K</kbd>
             </button>
 
             {/* Actions */}

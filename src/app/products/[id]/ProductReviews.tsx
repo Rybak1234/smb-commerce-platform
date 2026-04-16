@@ -42,7 +42,7 @@ export default function ProductReviews({ productId, initialReviews }: { productI
             <div key={review.id} className="bg-white rounded-xl border p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white text-xs font-bold">
                     {review.userName.charAt(0).toUpperCase()}
                   </div>
                   <div>
