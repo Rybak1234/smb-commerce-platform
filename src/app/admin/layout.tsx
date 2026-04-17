@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 border-r bg-card shrink-0 hidden lg:block">
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center"><span className="text-primary-foreground font-bold">🛒</span></div>
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center"><Store className="h-4 w-4 text-primary-foreground" /></div>
             <div><p className="font-bold text-sm">SurtiBolivia Admin</p><p className="text-[10px] text-muted-foreground">Panel de Administración</p></div>
           </div>
         </div>

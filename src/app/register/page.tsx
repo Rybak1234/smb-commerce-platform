@@ -40,7 +40,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-2">
-            <span className="text-primary-foreground font-bold text-xl">🛒</span>
+            <UserPlus className="h-6 w-6 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl">Crear Cuenta</CardTitle>
           <CardDescription>Únete a la familia SurtiBolivia</CardDescription>

@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             {relatedProducts.map((rp) => (
               <Link key={rp.id} href={`/products/${rp.id}`} className="group bg-card rounded-xl shadow-sm hover:shadow-lg transition-all overflow-hidden border">
                 <div className="relative h-48 bg-muted">
-                  {rp.image ? <Image src={rp.image} alt={rp.name} fill className="object-cover group-hover:scale-105 transition-transform" /> : <div className="flex items-center justify-center h-full"><ShoppingBag className="h-10 w-10 text-muted-foreground/20" /></div>}
+                  {(rp.image || rp.images?.[0]) ? <Image src={(rp.image || rp.images[0])!} alt={rp.name} fill className="object-cover group-hover:scale-105 transition-transform" /> : <div className="flex items-center justify-center h-full"><ShoppingBag className="h-10 w-10 text-muted-foreground/20" /></div>}
                 </div>
                 <div className="p-4">
                   <p className="text-[10px] uppercase text-muted-foreground">{rp.category?.name}</p>

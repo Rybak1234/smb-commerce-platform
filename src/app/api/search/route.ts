@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const [products, categories, vendors] = await Promise.all([
     prisma.product.findMany({
       where: { active: true, OR: [{ name: { contains: q, mode: "insensitive" } }, { description: { contains: q, mode: "insensitive" } }, { brand: { contains: q, mode: "insensitive" } }] },
-      select: { id: true, name: true, slug: true, price: true, image: true, categoryName: true },
+      select: { id: true, name: true, slug: true, price: true, image: true, images: true, categoryName: true },
       take: 8,
     }),
     prisma.category.findMany({
@@ -26,5 +26,6 @@ export async function GET(req: NextRequest) {
     }),
   ]);
 
-  return NextResponse.json({ products, categories, vendors });
+  const mappedProducts = products.map(p => ({ ...p, image: p.image || p.images?.[0] || null }));
+  return NextResponse.json({ products: mappedProducts, categories, vendors });
 }

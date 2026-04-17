@@ -117,7 +117,7 @@ export default function CartPage() {
                   <Separator />
                   <div className="flex justify-between text-lg font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
                 </div>
-                <Link href="/checkout"><Button className="w-full gap-2" size="lg">Pagar<ArrowRight className="h-4 w-4" /></Button></Link>
+                <Button className="w-full gap-2" size="lg" onClick={() => toast.info("Pasarela de pago en desarrollo. Proximamente disponible.")}>Pagar<ArrowRight className="h-4 w-4" /></Button>
               </CardContent>
             </Card>
 

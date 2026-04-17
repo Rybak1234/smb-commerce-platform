@@ -17,10 +17,10 @@ export function StoreFooter() {
             </div>
             <p className="text-sm text-muted-foreground">El supermercado en línea de la familia boliviana. Abarrotes, frutas, lácteos, moda boliviana y mucho más con envío a todo el país.</p>
             <div className="flex gap-3">
-              <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Globe className="h-4 w-4" /></a>
-              <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Camera className="h-4 w-4" /></a>
-              <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><MessageCircle className="h-4 w-4" /></a>
-              <a href="#" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Play className="h-4 w-4" /></a>
+              <a href="https://surtibolivia.bo" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Globe className="h-4 w-4" /></a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Camera className="h-4 w-4" /></a>
+              <a href="https://wa.me/59121234567" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><MessageCircle className="h-4 w-4" /></a>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"><Play className="h-4 w-4" /></a>
             </div>
           </div>
 
@@ -53,8 +53,8 @@ export function StoreFooter() {
             <h4 className="font-semibold">Contacto</h4>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-4 w-4 shrink-0" /><span>La Paz, Bolivia</span></div>
-              <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4 shrink-0" /><span>+591 2 123 4567</span></div>
-              <div className="flex items-center gap-2 text-muted-foreground"><Mail className="h-4 w-4 shrink-0" /><span>hola@surtibolivia.bo</span></div>
+              <div className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4 shrink-0" /><a href="tel:+59121234567" className="hover:text-primary transition-colors">+591 2 123 4567</a></div>
+              <div className="flex items-center gap-2 text-muted-foreground"><Mail className="h-4 w-4 shrink-0" /><a href="mailto:hola@surtibolivia.bo" className="hover:text-primary transition-colors">hola@surtibolivia.bo</a></div>
             </div>
           </div>
         </div>
@@ -64,9 +64,9 @@ export function StoreFooter() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} SurtiBolivia. Hecho en Bolivia.</p>
           <div className="flex gap-4">
-            <Link href="#" className="hover:text-primary transition-colors">Términos</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Privacidad</Link>
-            <Link href="#" className="hover:text-primary transition-colors">Cookies</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Términos</Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacidad</Link>
+            <Link href="/cookies" className="hover:text-primary transition-colors">Cookies</Link>
           </div>
         </div>
       </div>

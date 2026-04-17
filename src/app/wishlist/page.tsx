@@ -82,6 +82,15 @@ export default function WishlistPage() {
                   {item.product.originalPrice && <span className="text-xs text-muted-foreground line-through">{formatPrice(item.product.originalPrice)}</span>}
                 </div>
                 <p className="text-xs mt-1 font-medium">{item.product.stock > 0 ? <span className="text-green-600">En stock</span> : <span className="text-destructive">Agotado</span>}</p>
+                <Button size="sm" className="w-full mt-3 gap-1" disabled={item.product.stock === 0} onClick={() => {
+                  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                  const existing = cart.find((c: any) => c.id === item.product.id);
+                  if (existing) existing.quantity += 1;
+                  else cart.push({ id: item.product.id, name: item.product.name, price: item.product.price, image: item.product.image, quantity: 1 });
+                  localStorage.setItem("cart", JSON.stringify(cart));
+                  window.dispatchEvent(new Event("cartUpdated"));
+                  toast.success("Agregado al carrito");
+                }}><ShoppingCart className="h-3.5 w-3.5" /> Agregar al carrito</Button>
               </div>
             </div>
           ))}

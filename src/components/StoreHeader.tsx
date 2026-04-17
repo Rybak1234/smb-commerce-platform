@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useSession, signOut, signIn } from "next-auth/react";
 import { useTheme } from "next-themes";
-import { Search, ShoppingCart, Heart, Bell, Sun, Moon, Menu, X, User, Package, Settings, LogOut, Store, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, Heart, Bell, Sun, Moon, Menu, X, User, Package, Settings, LogOut, Store, ChevronDown, LogIn, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { SearchCommand } from "@/components/SearchCommand";
+import { ScreenLoader } from "@/components/ScreenLoader";
 
 export function StoreHeader({ categories }: { categories?: any[] }) {
   const { data: session } = useSession();
@@ -19,6 +21,9 @@ export function StoreHeader({ categories }: { categories?: any[] }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const user = session?.user as any;
+  const router = useRouter();
+  const [quickLoading, setQuickLoading] = useState<string | null>(null);
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
@@ -115,10 +120,73 @@ export function StoreHeader({ categories }: { categories?: any[] }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Link href="/login"><Button variant="ghost" size="sm">Ingresar</Button></Link>
-                  <Link href="/register"><Button size="sm">Registrarse</Button></Link>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <User className="h-4 w-4" />
+                      <span className="hidden sm:block text-sm">Cuenta</span>
+                      <ChevronDown className="h-3 w-3 opacity-50" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-72 p-0">
+                    <div className="p-4 border-b bg-muted/30">
+                      <p className="text-sm font-semibold mb-1">Bienvenido a SurtiBolivia</p>
+                      <p className="text-xs text-muted-foreground mb-3">Inicia sesion o crea una cuenta</p>
+                      <div className="flex gap-2">
+                        <Link href="/login" className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full gap-1.5">
+                            <LogIn className="h-3.5 w-3.5" /> Ingresar
+                          </Button>
+                        </Link>
+                        <Link href="/register" className="flex-1">
+                          <Button size="sm" className="w-full gap-1.5">
+                            <UserPlus className="h-3.5 w-3.5" /> Registrarse
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2 px-1">Acceso rapido</p>
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {[
+                          { src: "https://i.pravatar.cc/80?img=1", name: "Maria", email: "maria@surtibolivia.bo", pass: "user123" },
+                          { src: "https://i.pravatar.cc/80?img=5", name: "Carlos", email: "carlos@surtibolivia.bo", pass: "user123" },
+                          { src: "https://i.pravatar.cc/80?img=8", name: "Lucia", email: "lucia@surtibolivia.bo", pass: "user123" },
+                          { src: "https://i.pravatar.cc/80?img=12", name: "Admin", email: "admin@surtibolivia.bo", pass: "Password123!" },
+                        ].map((av) => (
+                          <button
+                            key={av.email}
+                            disabled={!!quickLoading}
+                            onClick={async () => {
+                              setQuickLoading(av.email);
+                              const res = await signIn("credentials", { email: av.email, password: av.pass, redirect: false });
+                              setQuickLoading(null);
+                              if (!res?.error) { setShowLoader(true); router.refresh(); }
+                            }}
+                            className="flex flex-col items-center gap-1 p-1.5 rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                          >
+                            <Avatar className={cn("h-10 w-10 ring-2 transition-all", quickLoading === av.email ? "ring-primary animate-pulse" : "ring-transparent hover:ring-primary")}>
+                              <AvatarImage src={av.src} />
+                              <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+                            </Avatar>
+                            <span className="text-[10px] text-muted-foreground">{av.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild className="mt-1">
+                        <Link href="/login" className="flex items-center gap-2 text-xs">
+                          <Package className="h-3.5 w-3.5" /> Seguir mi pedido
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/wishlist" className="flex items-center gap-2 text-xs">
+                          <Heart className="h-3.5 w-3.5" /> Crear lista de deseos
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
 
               <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -152,6 +220,7 @@ export function StoreHeader({ categories }: { categories?: any[] }) {
       </header>
 
       <SearchCommand open={searchOpen} onOpenChange={setSearchOpen} />
+      {showLoader && <ScreenLoader />}
     </>
   );
 }

@@ -6,7 +6,7 @@ import { cn, formatPrice, calculateDiscount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -17,6 +17,7 @@ interface ProductCardProps {
     price: number;
     originalPrice?: number | null;
     image?: string | null;
+    images?: string[] | null;
     badge?: string | null;
     avgRating?: number;
     reviewCount?: number;
@@ -29,13 +30,42 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const [wishlisted, setWishlisted] = useState(false);
+  const productImage = product.image || product.images?.[0] || null;
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : 0;
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("wishlist-ids") || "[]");
+    if (saved.includes(product.id)) setWishlisted(true);
+  }, [product.id]);
+
+  async function toggleWishlist() {
+    const next = !wishlisted;
+    setWishlisted(next);
+    // Persist locally
+    const saved: string[] = JSON.parse(localStorage.getItem("wishlist-ids") || "[]");
+    if (next) {
+      if (!saved.includes(product.id)) saved.push(product.id);
+    } else {
+      const idx = saved.indexOf(product.id);
+      if (idx >= 0) saved.splice(idx, 1);
+    }
+    localStorage.setItem("wishlist-ids", JSON.stringify(saved));
+    // Try API (works if logged in)
+    try {
+      if (next) {
+        await fetch("/api/wishlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: product.id }) });
+      } else {
+        await fetch("/api/wishlist", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId: product.id }) });
+      }
+    } catch {}
+    toast.success(next ? "Agregado a favoritos" : "Eliminado de favoritos");
+  }
 
   function addToCart() {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const existing = cart.find((i: any) => i.id === product.id);
     if (existing) existing.quantity += 1;
-    else cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, quantity: 1 });
+    else cart.push({ id: product.id, name: product.name, price: product.price, image: productImage, quantity: 1 });
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
     toast.success("Agregado al carrito");
@@ -51,14 +81,14 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
       </div>
 
       {/* Wishlist */}
-      <button onClick={() => { setWishlisted(!wishlisted); toast.success(wishlisted ? "Eliminado de favoritos" : "Agregado a favoritos"); }} className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all opacity-0 group-hover:opacity-100">
+      <button onClick={toggleWishlist} className="absolute top-3 right-3 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all opacity-0 group-hover:opacity-100">
         <Heart className={cn("h-4 w-4", wishlisted && "fill-red-500 text-red-500")} />
       </button>
 
       {/* Image */}
       <Link href={`/products/${product.id}`} className="block aspect-square overflow-hidden bg-muted relative">
-        {product.image ? (
-          <img src={product.image} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        {productImage ? (
+          <img src={productImage} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
         ) : (
           <div className="h-full w-full flex items-center justify-center text-muted-foreground">
             <ShoppingCart className="h-12 w-12" />

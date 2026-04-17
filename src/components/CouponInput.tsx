@@ -28,7 +28,7 @@ export default function CouponInput({ subtotal, onApply }: { subtotal: number; o
       if (data.valid) {
         setApplied(data);
         onApply(data.discount, data.code);
-        toast.success(`¡Cupón aplicado! -${data.discount}% de descuento`, { icon: "🎉" });
+        toast.success(`Cupon aplicado! -${data.discount}% de descuento`);
       } else {
         toast.error(data.message || "Cupón inválido");
       }

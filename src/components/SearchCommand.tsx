@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Search, X, ArrowRight, Package, Tag, Store } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { cn, formatPrice } from "@/lib/utils";
 import Link from "next/link";
 
@@ -30,10 +30,11 @@ export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenCha
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden">
-        <div className="flex items-center border-b px-3">
-          <Search className="h-4 w-4 shrink-0 opacity-50" />
-          <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar productos, categorías, tiendas..." className="flex h-11 w-full rounded-md bg-transparent py-3 px-2 text-sm outline-none placeholder:text-muted-foreground" />
+      <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden" aria-describedby={undefined}>
+        <VisuallyHidden.Root><DialogTitle>Buscar</DialogTitle></VisuallyHidden.Root>
+        <div className="flex items-center border-b px-3 pt-1">
+          <Search className="h-4 w-4 shrink-0 opacity-50 mr-2" />
+          <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar productos, categorías, tiendas..." className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground" />
           {query && <button onClick={() => setQuery("")}><X className="h-4 w-4 opacity-50" /></button>}
         </div>
         <div className="max-h-[400px] overflow-y-auto p-2">
@@ -76,7 +77,7 @@ export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenCha
           )}
         </div>
         <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
-          <span>⌘K para buscar</span>
+          <span>Ctrl+K para buscar</span>
           <span>ESC para cerrar</span>
         </div>
       </DialogContent>
