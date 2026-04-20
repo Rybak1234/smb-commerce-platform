@@ -30,9 +30,9 @@ export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenCha
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden" aria-describedby={undefined}>
+      <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden top-[30%] translate-y-[-30%]" aria-describedby={undefined}>
         <VisuallyHidden.Root><DialogTitle>Buscar</DialogTitle></VisuallyHidden.Root>
-        <div className="flex items-center border-b px-3 pt-1">
+        <div className="flex items-center border-b px-4 pt-3 pb-1">
           <Search className="h-4 w-4 shrink-0 opacity-50 mr-2" />
           <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar productos, categorías, tiendas..." className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground" />
           {query && <button onClick={() => setQuery("")}><X className="h-4 w-4 opacity-50" /></button>}
@@ -76,8 +76,7 @@ export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenCha
             </div>
           )}
         </div>
-        <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
-          <span>Ctrl+K para buscar</span>
+        <div className="flex items-center justify-center border-t px-3 py-2 text-xs text-muted-foreground">
           <span>ESC para cerrar</span>
         </div>
       </DialogContent>

@@ -6,7 +6,7 @@ export function ScreenLoader() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 800);
+    const timer = setTimeout(() => setVisible(false), 300);
     return () => clearTimeout(timer);
   }, []);
 

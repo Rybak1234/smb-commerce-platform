@@ -1,5 +1,6 @@
 ﻿import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import { Star, ArrowRight, ShoppingBag, Truck, Shield, Headphones, Zap, Gift, TrendingUp } from "lucide-react";
 import { NewsletterForm } from "@/components/NewsletterForm";
@@ -48,9 +49,9 @@ export default async function StorePage({
   // Fetch product images for flash deals
   const dealProductIds = (flashDeals as any[]).map((d: any) => d.productId).filter(Boolean);
   const dealProducts = dealProductIds.length > 0
-    ? await prisma.product.findMany({ where: { id: { in: dealProductIds } }, select: { id: true, image: true } })
+    ? await prisma.product.findMany({ where: { id: { in: dealProductIds } }, select: { id: true, image: true, images: true } })
     : [];
-  const dealProductMap = new Map(dealProducts.map(p => [p.id, p.image]));
+  const dealProductMap = new Map(dealProducts.map(p => [p.id, p.image || p.images?.[0] || null]));
 
   const totalPages = Math.ceil(totalProducts / pageSize);
 
@@ -61,8 +62,8 @@ export default async function StorePage({
       {!isFiltered && (
         <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 dark:from-indigo-900 dark:via-violet-900 dark:to-purple-900 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 animate-pulse" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
           </div>
           <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -86,10 +87,13 @@ export default async function StorePage({
               <div className="hidden lg:block animate-slide-left stagger-4">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl" />
-                  <img
+                  <Image
                     src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=500&fit=crop"
                     alt="Productos frescos SurtiBolivia"
                     className="rounded-3xl shadow-2xl w-full h-[400px] object-cover opacity-90 border border-white/10"
+                    width={600}
+                    height={500}
+                    priority
                   />
                   <div className="absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-xl animate-float">
                     <div className="flex items-center gap-2">
@@ -142,7 +146,7 @@ export default async function StorePage({
               {categories.map((cat) => (
                 <Link key={cat.id} href={`/?category=${cat.slug}`} className="flex flex-col items-center gap-2.5 bg-card rounded-xl border p-4 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1.5 transition-all duration-300 animate-flip-y">
                   {cat.image ? (
-                    <div className="relative h-14 w-14 rounded-lg overflow-hidden"><img src={cat.image} alt={cat.name} className="object-cover w-full h-full" /></div>
+                    <div className="relative h-14 w-14 rounded-lg overflow-hidden"><Image src={cat.image} alt={cat.name} className="object-cover w-full h-full" width={56} height={56} /></div>
                   ) : (
                     <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingBag className="h-7 w-7 text-primary" /></div>
                   )}
@@ -164,10 +168,10 @@ export default async function StorePage({
               <div className="flex items-center gap-3 mb-4"><Zap className="h-6 w-6" /><h2 className="text-xl font-bold">Ofertas del Día</h2></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {flashDeals.map((deal: any) => (
-                  <Link key={deal.id} href={`/products/${deal.productId}`} className="block bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 transition-colors">
+                  <Link key={deal.id} href={`/products/${deal.productId}`} className="group/deal block bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                     {deal.productId && dealProductMap.get(deal.productId) && (
-                      <div className="h-32 w-full overflow-hidden">
-                        <img src={dealProductMap.get(deal.productId)!} alt={deal.title} className="h-full w-full object-cover" />
+                      <div className="h-32 w-full overflow-hidden relative">
+                        <Image src={dealProductMap.get(deal.productId)!} alt={deal.title} className="object-cover group-hover/deal:scale-105 transition-transform duration-500" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
                       </div>
                     )}
                     <div className="p-4">
@@ -272,9 +276,9 @@ function ProductCardServer({ product, badge }: { product: any; badge?: string })
   return (
     <div className="group bg-card rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border hover:-translate-y-1 animate-fade-in">
       <div className="relative">
-        <Link href={`/products/${product.id}`} className="block overflow-hidden">
+        <Link href={`/products/${product.id}`} className="block overflow-hidden relative">
           {(product.images?.[0] || product.image) ? (
-            <img src={product.images?.[0] || product.image} alt={product.name} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
+            <Image src={product.images?.[0] || product.image} alt={product.name} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" width={400} height={224} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
           ) : (
             <div className="w-full h-56 bg-muted flex items-center justify-center"><ShoppingBag className="h-12 w-12 text-muted-foreground" /></div>
           )}
