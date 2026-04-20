@@ -11,23 +11,23 @@ async function main() {
   // ─── USERS ──────────────────────────
   const admin = await prisma.user.upsert({
     where: { email: "admin@surtibolivia.bo" },
-    update: {},
+    update: { name: "Rodrigo Huanca" },
     create: { email: "admin@surtibolivia.bo", password: hash, name: "Rodrigo Huanca", role: "admin", avatar: "https://i.pravatar.cc/150?u=admin@surtibolivia.bo", loyaltyPoints: 0, referralCode: "SBADM1" },
   });
   const vendor1User = await prisma.user.upsert({
     where: { email: "mercado@surtibolivia.bo" },
-    update: {},
+    update: { name: "Carlos Mendoza" },
     create: { email: "mercado@surtibolivia.bo", password: hash, name: "Carlos Mendoza", role: "vendor", avatar: "https://i.pravatar.cc/150?u=mercado@surtibolivia.bo", loyaltyPoints: 150, referralCode: "CARL0S" },
   });
   const vendor2User = await prisma.user.upsert({
     where: { email: "moda@surtibolivia.bo" },
-    update: {},
+    update: { name: "María Quispe" },
     create: { email: "moda@surtibolivia.bo", password: hash, name: "María Quispe", role: "vendor", avatar: "https://i.pravatar.cc/150?u=moda@surtibolivia.bo", loyaltyPoints: 200, referralCode: "MAR1A1" },
   });
   const customer = await prisma.user.upsert({
     where: { email: "cliente@surtibolivia.bo" },
-    update: {},
-    create: { email: "cliente@surtibolivia.bo", password: hash, name: "Pedro L�pez", role: "customer", avatar: "https://i.pravatar.cc/150?u=cliente@surtibolivia.bo", loyaltyPoints: 320, referralCode: "PEDR01" },
+    update: { name: "Pedro López" },
+    create: { email: "cliente@surtibolivia.bo", password: hash, name: "Pedro López", role: "customer", avatar: "https://i.pravatar.cc/150?u=cliente@surtibolivia.bo", loyaltyPoints: 320, referralCode: "PEDR01" },
   });
   const customer2 = await prisma.user.upsert({
     where: { email: "ana@surtibolivia.bo" },
@@ -56,7 +56,7 @@ async function main() {
   // ─── VENDORS ───────────────────────
   const vendor1 = await prisma.vendor.upsert({
     where: { userId: vendor1User.id },
-    update: {},
+    update: { description: "Productos frescos del Mercado Central de La Paz. Frutas, verduras, carnes, abarrotes y productos típicos bolivianos." },
     create: {
       userId: vendor1User.id,
       storeName: "Mercado Central SB",
@@ -76,7 +76,7 @@ async function main() {
   });
   const vendor2 = await prisma.vendor.upsert({
     where: { userId: vendor2User.id },
-    update: {},
+    update: { description: "Ropa y accesorios bolivianos inspirados en los 9 departamentos. Aguayos, tejidos, polleras modernas y diseno contemporaneo con identidad boliviana." },
     create: {
       userId: vendor2User.id,
       storeName: "Ropa 9 Departamentos",
@@ -109,7 +109,7 @@ async function main() {
     { name: "Electrónica", slug: "electronica", description: "Electrodomésticos, celulares y tecnología para el hogar", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop", order: 10 },
   ];
   for (const c of catData) {
-    cats[c.slug] = await prisma.category.upsert({ where: { slug: c.slug }, update: {}, create: c });
+    cats[c.slug] = await prisma.category.upsert({ where: { slug: c.slug }, update: { name: c.name, description: c.description }, create: c });
   }
 
   // ─── PRODUCTOS ──────────────────────
@@ -177,7 +177,7 @@ async function main() {
     const catName = catData.find(c => c.slug === catSlug)?.name || "";
     const product = await prisma.product.upsert({
       where: { slug: p.slug },
-      update: { name: p.name },
+      update: { name: p.name, description: p.description, brand: p.brand || null, tags: p.tags || [], badge: p.badge || null },
       create: {
         name: p.name, slug: p.slug, description: p.description,
         price: p.price, originalPrice: p.originalPrice || null, comparePrice: p.originalPrice || null, costPrice: Math.floor(p.price * 0.6),
