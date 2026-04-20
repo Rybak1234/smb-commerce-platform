@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Image from "next/image";
+import { ProductImage } from "./ProductImage";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,7 @@ export function ProductImageGallery({ images, name }: ProductImageGalleryProps) 
             {images.map((src, i) => (
               <div key={i} className="flex-[0_0_100%] min-w-0">
                 <div className="relative aspect-square bg-muted">
-                  <Image src={src} alt={`${name} - ${i + 1}`} fill className="object-cover" />
+                  <ProductImage src={src} alt={`${name} - ${i + 1}`} fill className="object-cover" />
                 </div>
               </div>
             ))}
@@ -90,7 +90,7 @@ export function ProductImageGallery({ images, name }: ProductImageGalleryProps) 
                 i === selectedIndex ? "border-primary" : "border-transparent hover:border-muted-foreground/30"
               )}
             >
-              <Image src={src} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
+              <ProductImage src={src} alt={`Thumbnail ${i + 1}`} fill className="object-cover" />
             </button>
           ))}
         </div>
@@ -100,7 +100,7 @@ export function ProductImageGallery({ images, name }: ProductImageGalleryProps) 
       <Dialog open={zoomOpen} onOpenChange={setZoomOpen}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden">
           <div className="relative aspect-square">
-            <Image src={images[selectedIndex]} alt={name} fill className="object-contain" />
+            <ProductImage src={images[selectedIndex]} alt={name} fill className="object-contain" />
           </div>
         </DialogContent>
       </Dialog>

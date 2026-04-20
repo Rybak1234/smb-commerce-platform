@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import { formatPrice } from "@/lib/utils";
 import { Package, Plus, AlertTriangle } from "lucide-react";
 
@@ -48,7 +48,7 @@ export default async function AdminProductsPage() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-muted overflow-hidden shrink-0">
-                      {p.images?.[0] ? <Image src={p.images[0]} alt="" width={40} height={40} className="h-full w-full object-cover" /> : <Package className="h-full w-full p-2 text-muted-foreground" />}
+                      <ProductImage src={p.images?.[0]} alt={p.name} width={40} height={40} className="h-full w-full object-cover" />
                     </div>
                     <div className="min-w-0">
                       <span className="font-medium block truncate max-w-[200px]">{p.name}</span>

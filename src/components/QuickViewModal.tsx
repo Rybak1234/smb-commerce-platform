@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
+import { ProductImage } from "./ProductImage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -57,11 +57,7 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Image Gallery */}
           <div className="relative aspect-square bg-muted">
-            {allImages.length > 0 ? (
-              <Image src={allImages[activeImage]} alt={product.name} fill className="object-cover" />
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">Sin imagen</div>
-            )}
+              <ProductImage src={allImages[activeImage]} alt={product.name} fill className="object-cover" />
             {discount > 0 && (
               <Badge className="absolute top-3 left-3 bg-red-500 hover:bg-red-500">-{discount}%</Badge>
             )}

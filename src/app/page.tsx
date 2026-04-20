@@ -1,6 +1,6 @@
 ﻿import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import { Star, ArrowRight, ShoppingBag, Truck, Shield, Headphones, Zap, Gift, TrendingUp } from "lucide-react";
 import { NewsletterForm } from "@/components/NewsletterForm";
@@ -87,7 +87,7 @@ export default async function StorePage({
               <div className="hidden lg:block animate-slide-left stagger-4">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl" />
-                  <Image
+                  <ProductImage
                     src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&h=500&fit=crop"
                     alt="Productos frescos SurtiBolivia"
                     className="rounded-3xl shadow-2xl w-full h-[400px] object-cover opacity-90 border border-white/10"
@@ -146,7 +146,7 @@ export default async function StorePage({
               {categories.map((cat) => (
                 <Link key={cat.id} href={`/?category=${cat.slug}`} className="flex flex-col items-center gap-2.5 bg-card rounded-xl border p-4 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1.5 transition-all duration-300 animate-flip-y">
                   {cat.image ? (
-                    <div className="relative h-14 w-14 rounded-lg overflow-hidden"><Image src={cat.image} alt={cat.name} className="object-cover w-full h-full" width={56} height={56} /></div>
+                    <div className="relative h-14 w-14 rounded-lg overflow-hidden"><ProductImage src={cat.image} alt={cat.name} className="object-cover w-full h-full" width={56} height={56} /></div>
                   ) : (
                     <div className="h-14 w-14 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingBag className="h-7 w-7 text-primary" /></div>
                   )}
@@ -171,7 +171,7 @@ export default async function StorePage({
                   <Link key={deal.id} href={`/products/${deal.productId}`} className="group/deal block bg-white/10 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-white/20 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                     {deal.productId && dealProductMap.get(deal.productId) && (
                       <div className="h-32 w-full overflow-hidden relative">
-                        <Image src={dealProductMap.get(deal.productId)!} alt={deal.title} className="object-cover group-hover/deal:scale-105 transition-transform duration-500" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+                        <ProductImage src={dealProductMap.get(deal.productId)!} alt={deal.title} className="object-cover group-hover/deal:scale-105 transition-transform duration-500" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
                       </div>
                     )}
                     <div className="p-4">
@@ -277,11 +277,7 @@ function ProductCardServer({ product, badge }: { product: any; badge?: string })
     <div className="group bg-card rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border hover:-translate-y-1 animate-fade-in">
       <div className="relative">
         <Link href={`/products/${product.id}`} className="block overflow-hidden relative">
-          {(product.images?.[0] || product.image) ? (
-            <Image src={product.images?.[0] || product.image} alt={product.name} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" width={400} height={224} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
-          ) : (
-            <div className="w-full h-56 bg-muted flex items-center justify-center"><ShoppingBag className="h-12 w-12 text-muted-foreground" /></div>
-          )}
+          <ProductImage src={product.images?.[0] || product.image} alt={product.name} className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" width={400} height={224} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
         </Link>
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {badge && <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md">{badge}</span>}

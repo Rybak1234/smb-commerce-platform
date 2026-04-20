@@ -12,8 +12,8 @@ import { LogIn, Mail, Lock, AlertCircle } from "lucide-react";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@surtibolivia.bo");
+  const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const unauthorized = searchParams.get("error") === "unauthorized";
@@ -73,7 +73,20 @@ function LoginForm() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="justify-center">
+        <CardFooter className="flex-col gap-3">
+          <div className="w-full p-4 bg-muted/50 rounded-lg border border-border">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Credenciales de demostración</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Admin:</span>
+                <code className="bg-background px-2 py-0.5 rounded border text-xs">admin@surtibolivia.bo / admin123</code>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Cliente:</span>
+                <code className="bg-background px-2 py-0.5 rounded border text-xs">cliente@surtibolivia.bo / cliente123</code>
+              </div>
+            </div>
+          </div>
           <p className="text-sm text-muted-foreground">
             ¿No tienes cuenta?{" "}
             <Link href="/register" className="text-primary font-medium hover:underline">Regístrate</Link>

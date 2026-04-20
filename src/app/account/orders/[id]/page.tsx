@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ export default function OrderDetail({ params }: { params: { id: string } }) {
               {order.items?.map((item: any) => (
                 <div key={item.id} className="flex gap-4">
                   <div className="h-16 w-16 bg-muted rounded-md overflow-hidden shrink-0">
-                    {item.product?.images?.[0] ? <Image src={item.product.images[0]} alt="" width={64} height={64} className="h-full w-full object-cover" /> : <Package className="h-full w-full p-3 text-muted-foreground" />}
+                    <ProductImage src={item.product?.images?.[0]} alt={item.product?.name || "Producto"} width={64} height={64} className="h-full w-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{item.product?.name || "Producto"}</p>

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import Link from "next/link";
 import { Heart, ShoppingBag, Trash2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -65,11 +65,7 @@ export default function WishlistPage() {
           {items.map((item) => (
             <div key={item.id} className="group bg-card rounded-xl overflow-hidden border shadow-sm hover:shadow-lg transition-all">
               <div className="relative h-48 bg-muted">
-                {item.product.image ? (
-                  <Image src={item.product.image} alt={item.product.name} fill className="object-cover group-hover:scale-105 transition-transform" />
-                ) : (
-                  <div className="flex items-center justify-center h-full"><ShoppingBag className="h-10 w-10 text-muted-foreground/20" /></div>
-                )}
+                <ProductImage src={item.product.image} alt={item.product.name} fill className="object-cover group-hover:scale-105 transition-transform" />
                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 bg-white/80 dark:bg-black/50 rounded-full text-destructive hover:text-destructive" onClick={() => removeItem(item.product.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { ProductImage } from "./ProductImage";
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
@@ -56,7 +56,7 @@ export function CartDrawer({ open, onOpenChange, items, onUpdateQuantity, onRemo
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3">
                     <div className="relative h-20 w-20 shrink-0 rounded-lg overflow-hidden bg-muted">
-                      <Image src={item.image || "/placeholder.png"} alt={item.name} fill className="object-cover" />
+                      <ProductImage src={item.image} alt={item.name} fill className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium truncate">{item.name}</h4>

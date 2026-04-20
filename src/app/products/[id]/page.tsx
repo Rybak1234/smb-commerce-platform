@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import Link from "next/link";
 import { formatPrice, calculateDiscount, formatDate } from "@/lib/utils";
 import { Star, Store, ChevronRight, ShoppingBag, Shield, Truck, RotateCcw, Share2, Tag } from "lucide-react";
@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
         <div className="space-y-3">
           <div className="relative aspect-square bg-muted rounded-xl overflow-hidden">
             {allImages.length > 0 ? (
-              <Image src={allImages[0]} alt={product.name} fill className="object-cover" priority />
+              <ProductImage src={allImages[0]} alt={product.name} fill className="object-cover" priority />
             ) : (
               <div className="flex items-center justify-center h-full"><ShoppingBag className="h-20 w-20 text-muted-foreground/20" /></div>
             )}
@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             <div className="flex gap-2 overflow-x-auto">
               {allImages.map((img, i) => (
                 <div key={i} className="relative h-20 w-20 shrink-0 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors cursor-pointer">
-                  <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
+                  <ProductImage src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover" />
                 </div>
               ))}
             </div>
@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             {relatedProducts.map((rp) => (
               <Link key={rp.id} href={`/products/${rp.id}`} className="group bg-card rounded-xl shadow-sm hover:shadow-lg transition-all overflow-hidden border">
                 <div className="relative h-48 bg-muted">
-                  {(rp.image || rp.images?.[0]) ? <Image src={(rp.image || rp.images[0])!} alt={rp.name} fill className="object-cover group-hover:scale-105 transition-transform" /> : <div className="flex items-center justify-center h-full"><ShoppingBag className="h-10 w-10 text-muted-foreground/20" /></div>}
+                  <ProductImage src={rp.image || rp.images?.[0]} alt={rp.name} fill className="object-cover group-hover:scale-105 transition-transform" />
                 </div>
                 <div className="p-4">
                   <p className="text-[10px] uppercase text-muted-foreground">{rp.category?.name}</p>

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { ProductImage } from "@/components/ProductImage";
 import Link from "next/link";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,7 +80,7 @@ export default function CartPage() {
             {items.map((item) => (
               <div key={item.id} className="flex gap-4 p-4 rounded-xl border bg-card">
                 <div className="relative h-24 w-24 shrink-0 rounded-lg overflow-hidden bg-muted">
-                  <Image src={item.image || "/placeholder.png"} alt={item.name} fill className="object-cover" />
+                  <ProductImage src={item.image} alt={item.name} fill className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/products/${item.id}`} className="font-semibold hover:text-primary transition-colors line-clamp-1">{item.name}</Link>

@@ -4,6 +4,7 @@ import { Search, X, ArrowRight, Package, Tag, Store } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { cn, formatPrice } from "@/lib/utils";
+import { ProductImage } from "./ProductImage";
 import Link from "next/link";
 
 export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -65,7 +66,7 @@ export function SearchCommand({ open, onOpenChange }: { open: boolean; onOpenCha
               <p className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Productos</p>
               {results.products.map((p: any) => (
                 <Link key={p.id} href={`/products/${p.id}`} onClick={() => onOpenChange(false)} className="flex items-center gap-3 rounded-sm px-2 py-2 hover:bg-accent">
-                  {p.image ? <img src={p.image} alt="" className="h-10 w-10 rounded object-cover" /> : <Package className="h-10 w-10 p-2 text-muted-foreground" />}
+                  <ProductImage src={p.image} alt={p.name || ""} width={40} height={40} className="h-10 w-10 rounded object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{p.name}</p>
                     <p className="text-xs text-muted-foreground">{p.categoryName}</p>

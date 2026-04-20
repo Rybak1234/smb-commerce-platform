@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductImage } from "./ProductImage";
 import { Heart, ShoppingCart, Eye, Star } from "lucide-react";
 import { cn, formatPrice, calculateDiscount } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -87,13 +87,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
 
       {/* Image */}
       <Link href={`/products/${product.id}`} className="block aspect-square overflow-hidden bg-muted relative">
-        {productImage ? (
-          <img src={productImage} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-muted-foreground">
-            <ShoppingCart className="h-12 w-12" />
-          </div>
-        )}
+        <ProductImage src={productImage} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
         {/* Quick actions overlay */}
         <div className="absolute inset-x-0 bottom-0 p-3 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <Button size="sm" className="flex-1 shadow-lg" onClick={(e) => { e.preventDefault(); addToCart(); }} disabled={product.stock === 0}>

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Store, Star, ArrowLeft, Package } from "lucide-react";
+import { ProductImage } from "@/components/ProductImage";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -53,11 +54,7 @@ export default async function VendorPage({ params }: { params: { slug: string } 
             return (
               <Link key={product.id} href={`/products/${product.id}`} className="group bg-card rounded-xl overflow-hidden border hover:shadow-lg transition-all hover:-translate-y-1">
                 <div className="aspect-square overflow-hidden bg-muted relative">
-                  {product.image ? (
-                    <img src={product.image} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center"><Package className="h-12 w-12 text-muted-foreground/20" /></div>
-                  )}
+                    <ProductImage src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                   {discount > 0 && <span className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-xs font-bold px-2 py-0.5 rounded">-{discount}%</span>}
                 </div>
                 <div className="p-4">

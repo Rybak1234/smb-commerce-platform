@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { StoreHeader } from "@/components/StoreHeader";
 import { StoreFooter } from "@/components/StoreFooter";
+import { HideOnAuth } from "@/components/HideOnAuth";
 import { ScreenLoader } from "@/components/ScreenLoader";
 import { RouteLoader } from "@/components/RouteLoader";
 import { Suspense } from "react";
@@ -26,9 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Toaster richColors position="top-right" closeButton />
         <ScreenLoader />
         <Suspense><RouteLoader /></Suspense>
-        <StoreHeader />
+        <HideOnAuth><StoreHeader /></HideOnAuth>
         <main className="flex-1">{children}</main>
-        <StoreFooter />
+        <HideOnAuth><StoreFooter /></HideOnAuth>
 
         </AOSProvider>
         </AuthProvider>
